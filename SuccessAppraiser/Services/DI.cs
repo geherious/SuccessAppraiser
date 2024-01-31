@@ -1,4 +1,5 @@
-﻿using SuccessAppraiser.Services.Goal;
+﻿using SuccessAppraiser.Services.Auth;
+using SuccessAppraiser.Services.Goal;
 
 namespace SuccessAppraiser.Services
 {
@@ -7,6 +8,7 @@ namespace SuccessAppraiser.Services
         public static IServiceCollection AddProjectServices(this IServiceCollection services)
         {
             GoalRegister.RegisterGoalServices(services);
+            Authregister.RegisterAuthServices(services);
             return services;
         }
     }

@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using SuccessAppraiser.Entities;
 using SuccessAppraiser.Services.Goal.DTO;
@@ -9,7 +10,7 @@ using System.Security.Claims;
 namespace SuccessAppraiser.Controllers.Goal
 {
     [ApiController]
-    [Route("[controller]/[action]")]
+    [Route("work-space/[action]")]
     [Authorize]
     public class GoalController : ControllerBase
     {
@@ -37,7 +38,7 @@ namespace SuccessAppraiser.Controllers.Goal
         [HttpPost]
         public async Task<IActionResult> AddGoal([FromBody] AddGoalDto goalDto, CancellationToken ct)
         {
-            Guid userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+            Guid userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
 
             GoalItem newGoal = await _goalService.AddGoalAsync(userId, goalDto, ct);
             return Ok(_mapper.Map<GetUserGoalDto>(newGoal));
