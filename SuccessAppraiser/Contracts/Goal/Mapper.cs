@@ -1,9 +1,8 @@
 ﻿using AutoMapper;
 using Microsoft.Extensions.Logging;
 using SuccessAppraiser.Entities;
-using SuccessAppraiser.Services.Goal.DTO;
 
-namespace SuccessAppraiser.Services.Goal
+namespace SuccessAppraiser.Contracts.Goal
 {
     public class Mapper : Profile
     {

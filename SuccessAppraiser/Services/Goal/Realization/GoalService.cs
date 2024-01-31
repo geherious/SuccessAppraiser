@@ -1,9 +1,9 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using SuccessAppraiser.Contracts.Goal;
 using SuccessAppraiser.Data.Context;
 using SuccessAppraiser.Entities;
-using SuccessAppraiser.Services.Goal.DTO;
 using SuccessAppraiser.Services.Goal.Interfaces;
 
 namespace SuccessAppraiser.Services.Goal.Realization

@@ -1,6 +1,6 @@
 ﻿using SuccessAppraiser.Entities;
 
-namespace SuccessAppraiser.Services.Goal.DTO
+namespace SuccessAppraiser.Contracts.Goal
 {
     public record GoalDateDto(Guid Id, DateOnly Date, string? Comment, DayState State);
 }

@@ -1,7 +1,7 @@
 ﻿using FluentValidation;
-using SuccessAppraiser.Services.Auth.Dto;
+using SuccessAppraiser.Contracts.Auth;
 
-namespace SuccessAppraiser.Services.Auth.Validators
+namespace SuccessAppraiser.Validation.Auth
 {
     public class NewRegisterValidator : AbstractValidator<NewRegisterDto>
     {

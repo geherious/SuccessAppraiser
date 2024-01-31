@@ -1,4 +1,4 @@
-﻿using SuccessAppraiser.Services.Goal.DTO;
+﻿using SuccessAppraiser.Contracts.Goal;
 
 namespace SuccessAppraiser.Services.Goal.Interfaces
 {

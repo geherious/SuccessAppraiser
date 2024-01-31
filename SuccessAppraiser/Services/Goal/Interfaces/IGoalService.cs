@@ -1,5 +1,5 @@
-﻿using SuccessAppraiser.Entities;
-using SuccessAppraiser.Services.Goal.DTO;
+﻿using SuccessAppraiser.Contracts.Goal;
+using SuccessAppraiser.Entities;
 
 namespace SuccessAppraiser.Services.Goal.Interfaces
 {

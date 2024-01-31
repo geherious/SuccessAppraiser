@@ -2,8 +2,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using SuccessAppraiser.Contracts.Goal;
 using SuccessAppraiser.Entities;
-using SuccessAppraiser.Services.Goal.DTO;
 using SuccessAppraiser.Services.Goal.Interfaces;
 using System.Security.Claims;
 

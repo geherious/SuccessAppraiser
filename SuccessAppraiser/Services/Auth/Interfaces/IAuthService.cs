@@ -1,5 +1,5 @@
-﻿using SuccessAppraiser.Entities;
-using SuccessAppraiser.Services.Auth.Dto;
+﻿using SuccessAppraiser.Contracts.Auth;
+using SuccessAppraiser.Entities;
 
 namespace SuccessAppraiser.Services.Auth.Interfaces
 {

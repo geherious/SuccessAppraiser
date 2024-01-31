@@ -1,7 +1,7 @@
 ﻿using FluentValidation.Results;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
-namespace SuccessAppraiser.Services.Validation
+namespace SuccessAppraiser.Validation
 {
     public static class Extensions
     {

@@ -2,11 +2,10 @@
 using FluentValidation.Results;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using SuccessAppraiser.Contracts.Auth;
 using SuccessAppraiser.Entities;
-using SuccessAppraiser.Services.Auth.Dto;
 using SuccessAppraiser.Services.Auth.Interfaces;
-using SuccessAppraiser.Services.Auth.Validators;
-using SuccessAppraiser.Services.Validation;
+using SuccessAppraiser.Validation;
 
 namespace SuccessAppraiser.Controllers.Auth
 {

@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using SuccessAppraiser.Contracts.Auth;
 using SuccessAppraiser.Entities;
-using SuccessAppraiser.Services.Auth.Dto;
 using SuccessAppraiser.Services.Auth.Errors;
 using SuccessAppraiser.Services.Auth.Interfaces;
 
