@@ -1,0 +1,6 @@
+@SuccessAppraiser_HostAddress = http://localhost:5151
+
+GET {{SuccessAppraiser_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

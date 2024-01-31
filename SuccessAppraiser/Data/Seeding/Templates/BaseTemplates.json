@@ -1,0 +1,10 @@
+[
+  {
+    "Name": "Habbit",
+    "States": {
+      "Easy": "#58E000",
+      "Average": "#FFF800",
+      "Hard": "#FF2C00"
+    }
+  }
+]
