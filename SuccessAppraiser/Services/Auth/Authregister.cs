@@ -10,6 +10,7 @@ namespace SuccessAppraiser.Services.Auth
         {
             services.AddScoped<IJwtService, JwtService>();
             services.AddScoped<IAuthService, AuthService>();
+            services.AddScoped<ITokenService, TokenService>();
         }
     }
 }

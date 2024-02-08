@@ -13,6 +13,7 @@ namespace SuccessAppraiser.Data.Context
         public DbSet<GoalItem> GoalItems { get; set; }
         public DbSet<GoalTemplate> GoalTemplates { get; set; }
         public DbSet<ApplicationUser> ApplicationUsers { get; set; }
+        public DbSet<RefreshToken> RefreshTokens { get; set; }
 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {

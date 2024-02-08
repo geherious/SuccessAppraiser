@@ -6,5 +6,6 @@ namespace SuccessAppraiser.Entities
     {
         public List<GoalItem> Goals { get; set; } = new List<GoalItem>();
         public List<GoalTemplate> Templates { get; set; } = new List<GoalTemplate>();
+        public List<RefreshToken> RefreshTokens { get; set; } = new List<RefreshToken>();
     }
 }

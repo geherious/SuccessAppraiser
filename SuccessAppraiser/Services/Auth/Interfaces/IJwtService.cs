@@ -5,6 +5,6 @@ namespace SuccessAppraiser.Services.Auth.Interfaces
 {
     public interface IJwtService
     {
-        string GetAccessToken(ApplicationUser user, IList<Claim> claims);
+        string GenerateToken(IList<Claim> claims);
     }
 }

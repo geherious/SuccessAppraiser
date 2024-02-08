@@ -6,6 +6,7 @@ using SuccessAppraiser.Contracts.Auth;
 using SuccessAppraiser.Entities;
 using SuccessAppraiser.Services.Auth.Interfaces;
 using SuccessAppraiser.Validation;
+using System.Security.Claims;
 
 namespace SuccessAppraiser.Controllers.Auth
 {
@@ -17,17 +18,18 @@ namespace SuccessAppraiser.Controllers.Auth
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IAuthService _authService;
         private readonly IJwtService _jwtService;
+        private readonly ITokenService _tokenService;
         private readonly IValidator<NewRegisterDto> _registerValidator;
         private readonly IValidator<LoginDto> _loginValidator;
-
         public AuthController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager,
-            IAuthService authService, IJwtService jwtService,
+            IAuthService authService, IJwtService jwtService, ITokenService tokenService,
             IValidator<NewRegisterDto> registerValidator, IValidator<LoginDto> loginValidator)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _authService = authService;
             _jwtService = jwtService;
+            _tokenService = tokenService;
             _registerValidator = registerValidator;
             _loginValidator = loginValidator;
         }
@@ -68,7 +70,7 @@ namespace SuccessAppraiser.Controllers.Auth
 
             if (user == null)
             {
-                ModelState.AddModelError("Login", "Doesn't exist");
+                ModelState.AddModelError("Login", "User doesn't exist");
                 return Unauthorized(ModelState);
             }
 
@@ -76,17 +78,27 @@ namespace SuccessAppraiser.Controllers.Auth
 
             if (!signInResult.Succeeded)
             {
-                ModelState.AddModelError("Login", "Invalid");
+                ModelState.AddModelError("Login", "Invalid login attempt");
                 return Unauthorized(ModelState);
             }
+            List<Claim> userClaims =
+            [
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                new Claim(ClaimTypes.Name, user.UserName),
+            ];
 
-            var userClaims = await _userManager.GetClaimsAsync(user);
+            var accessToken = _jwtService.GenerateToken(userClaims);
+            Guid refreshToken = await _tokenService.AddRefreshTokenAsync(user.Id);
 
 
-            var jwt = _jwtService.GetAccessToken(user, userClaims);
+            Response.Cookies.Append("X-Refresh-Token", refreshToken.ToString(), new CookieOptions { HttpOnly = true,
+                SameSite = SameSiteMode.Strict, Secure = true });
 
-            return Ok(new { AccessToken = jwt });
+
+            return Ok(new { AccessToken = accessToken });
 
         }
+
+
     }
 }
