@@ -6,6 +6,7 @@ using SuccessAppraiser.Contracts.Auth;
 using SuccessAppraiser.Entities;
 using SuccessAppraiser.Services.Auth.Interfaces;
 using SuccessAppraiser.Validation;
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 
 namespace SuccessAppraiser.Controllers.Auth
@@ -83,8 +84,7 @@ namespace SuccessAppraiser.Controllers.Auth
             }
             List<Claim> userClaims =
             [
-                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                new Claim(ClaimTypes.Name, user.UserName),
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
             ];
 
             var accessToken = _jwtService.GenerateToken(userClaims);
@@ -95,7 +95,7 @@ namespace SuccessAppraiser.Controllers.Auth
                 SameSite = SameSiteMode.Strict, Secure = true });
 
 
-            return Ok(new { AccessToken = accessToken });
+            return Ok(new { AccessToken = accessToken, Username = user.UserName });
 
         }
 

@@ -1,0 +1,9 @@
+.regsection {
+    min-width: 280px;
+
+}
+
+.alreadyLoggedIn {
+    text-align: left;
+    margin-top: 3px;
+}
