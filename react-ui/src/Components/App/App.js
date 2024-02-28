@@ -7,6 +7,7 @@ import { Routes, Route } from 'react-router-dom';
 import Welcome from '../Welcome/Welcome';
 import RequireAuth from '../Auth/RequireAuth';
 import Home from '../Home/Home';
+import Policy from '../Policy/Policy';
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
         <Route path='login' element={<Login/>}/>
         <Route path='register' element={<Register/>}/>
         <Route path='/' element={<Welcome/>}/>
+        <Route path='/policy' element={<Policy/>}/>
 
         {/* private routes */}
         <Route element={<RequireAuth/>}>

@@ -3,7 +3,6 @@ import './Login.css';
 import { instance } from '../../../api/axios';
 import { useRef, useState, useEffect } from "react"
 import useAuth from '../../../hooks/useAuth';
-import { jwtDecode } from 'jwt-decode';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 
 const LOGIN_URL = '/auth/login';
@@ -21,6 +20,7 @@ const Login = () => {
     const [email, setEmail] = useState('');
     const [pwd, setPwd] = useState('');
     const [errMsg, setErrMsg] = useState('');
+    const [pending, setPending] = useState(false);
 
     useEffect(() => {
         emailRef.current.focus();
@@ -32,6 +32,7 @@ const Login = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setPending(true);
 
         try {
             const response = await instance.post(LOGIN_URL,
@@ -60,6 +61,7 @@ const Login = () => {
             }
             errRef.current.focus();
         }
+        setPending(false);
     }
   return (
     <section className='loginsection d-flex flex-column'>
@@ -90,7 +92,7 @@ const Login = () => {
                     required
                 />
             </div>
-            <button className='btn btn-primary'>Sign In</button>
+            <button disabled={pending} className='btn btn-primary'>Sign In</button>
         </form>
         <p>
             Need an Account?<br />

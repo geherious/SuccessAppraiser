@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using FluentValidation.Results;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using SuccessAppraiser.Contracts.Auth;
@@ -87,16 +88,53 @@ namespace SuccessAppraiser.Controllers.Auth
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
             ];
 
-            var accessToken = _jwtService.GenerateToken(userClaims);
-            Guid refreshToken = await _tokenService.AddRefreshTokenAsync(user.Id);
+            string accessToken = _jwtService.GenerateToken(userClaims, TokenType.Accesstoken);
+            var refreshToken = await _tokenService.AddRefreshTokenAsync(user.Id);
 
 
-            Response.Cookies.Append("X-Refresh-Token", refreshToken.ToString(), new CookieOptions { HttpOnly = true,
-                SameSite = SameSiteMode.Strict, Secure = true });
+            Response.Cookies.Append("X-Refresh-Token", refreshToken.Token, new CookieOptions { HttpOnly = true,
+                SameSite = SameSiteMode.Strict, Secure = true, Expires = refreshToken.Expires });
 
 
             return Ok(new { AccessToken = accessToken, Username = user.UserName });
 
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Refresh()
+        {
+            if (!Request.Cookies.ContainsKey("X-Refresh-Token"))
+            {
+                return Unauthorized("No refresh token");
+            }
+
+
+            string token = Request.Cookies["X-Refresh-Token"]!;
+            var oldRefreshToken = await _tokenService.GetValidTokenEntityAsync(token);
+            if (oldRefreshToken == null)
+            {
+                return Unauthorized("Bad refresh token");
+            }
+
+            List<Claim> userClaims =
+            [
+                new Claim(ClaimTypes.NameIdentifier, oldRefreshToken.UserId.ToString())
+            ];
+
+            var accessToken = _jwtService.GenerateToken(userClaims, TokenType.Accesstoken);
+            var refreshToken = await _tokenService.AddRefreshTokenAsync(oldRefreshToken.UserId);
+            await _tokenService.RemoveRefreshTokenAsync(token);
+
+            Response.Cookies.Append("X-Refresh-Token", refreshToken.Token, new CookieOptions
+            {
+                HttpOnly = true,
+                SameSite = SameSiteMode.Strict,
+                Secure = true,
+                Expires = refreshToken.Expires
+            });
+            // check user from token and test
+
+            return Ok(new { AccessToken = accessToken, Username = refreshToken.User.UserName });
         }
 
 

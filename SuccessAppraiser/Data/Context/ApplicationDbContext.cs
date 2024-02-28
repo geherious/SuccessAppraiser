@@ -19,5 +19,13 @@ namespace SuccessAppraiser.Data.Context
         {
             Database.EnsureCreated();
         }
+
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            base.OnModelCreating(builder);
+            builder.Entity<RefreshToken>()
+                .HasIndex(x => x.Token)
+                .IsUnique();
+        }
     }
 }

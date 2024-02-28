@@ -16,10 +16,9 @@ namespace SuccessAppraiser.Services.Auth.Realization
             _configuration = configuration;
         }
 
-        public string GenerateToken(IList<Claim> claims)
+        public string GenerateToken(IList<Claim> claims, TokenType type)
         {
-            int minutes = int.Parse(_configuration.GetSection("JWT:AccessTokenMinutes").Value);
-            DateTime expires = DateTime.UtcNow.AddMinutes(minutes);
+            DateTime expires = DateTimeFactory(type);
 
             var issuer = _configuration.GetSection("JWT:Issuer").Value;
             var audience = _configuration.GetSection("JWT:Audience").Value;
@@ -37,6 +36,21 @@ namespace SuccessAppraiser.Services.Auth.Realization
 
             var jwt = new JwtSecurityTokenHandler().WriteToken(token);
             return jwt;
+        }
+
+        private DateTime DateTimeFactory(TokenType tokenType)
+        {
+            switch (tokenType)
+            {
+                case TokenType.Accesstoken:
+                    int minutes = int.Parse(_configuration.GetSection("JWT:AccessTokenMinutes").Value);
+                    return DateTime.UtcNow.AddMinutes(minutes);
+                case TokenType.RefreshToken:
+                    int days = int.Parse(_configuration.GetSection("JWT:RefreshTokenDays").Value);
+                    return DateTime.UtcNow.AddDays(days);
+                default:
+                    return DateTime.UtcNow;
+            }
         }
 
     }

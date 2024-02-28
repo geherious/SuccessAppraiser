@@ -3,6 +3,7 @@ using SuccessAppraiser.Data.Context;
 using SuccessAppraiser.Entities;
 using SuccessAppraiser.Services.Auth.Errors;
 using SuccessAppraiser.Services.Auth.Interfaces;
+using System.Security.Claims;
 
 namespace SuccessAppraiser.Services.Auth.Realization
 {
@@ -10,15 +11,16 @@ namespace SuccessAppraiser.Services.Auth.Realization
     {
         private readonly ApplicationDbContext _dbContext;
         private readonly IConfiguration _configuration;
+        private readonly IJwtService _jwtService;
 
-        public TokenService(ApplicationDbContext dbContext, IConfiguration configuration)
+        public TokenService(ApplicationDbContext dbContext, IConfiguration configuration, IJwtService jwtService)
         {
             _dbContext = dbContext;
             _configuration = configuration;
+            _jwtService = jwtService;
         }
-        public async Task<Guid> AddRefreshTokenAsync(Guid userId)
+        public async Task<RefreshToken> AddRefreshTokenAsync(Guid userId)
         {
-            RemoveAllExpiredRefreshTokensQuery(userId);
 
             int expriresInDays = int.Parse(_configuration.GetSection("JWT:RefreshTokenDays").Value);
 
@@ -27,9 +29,14 @@ namespace SuccessAppraiser.Services.Auth.Realization
                 throw new UserNotFoundException();
             }
 
+            List<Claim> userClaims =
+            [
+                new Claim(ClaimTypes.NameIdentifier, userId.ToString())
+            ];
+
             var newToken = new RefreshToken
             {
-                Token = Guid.NewGuid(),
+                Token = _jwtService.GenerateToken(userClaims, TokenType.RefreshToken),
                 UserId = userId,
                 Expires = DateTime.UtcNow.AddDays(expriresInDays)
             };
@@ -37,34 +44,16 @@ namespace SuccessAppraiser.Services.Auth.Realization
             await _dbContext.RefreshTokens.AddAsync(newToken);
 
             await _dbContext.SaveChangesAsync();
+            
 
-            return newToken.Token;
+            return newToken;
 
         }
 
-        public void RemoveAllExpiredRefreshTokens(Guid userId)
+        public async Task RemoveRefreshTokenAsync(string token)
         {
-            RemoveAllExpiredRefreshTokensQuery(userId);
 
-            _dbContext.SaveChanges();
-        }
-
-        private void RemoveAllExpiredRefreshTokensQuery(Guid userId)
-        {
-            _dbContext.RefreshTokens
-                .RemoveRange(_dbContext.RefreshTokens.Where(x => (x.UserId == userId) && (x.Expires > DateTime.UtcNow)));
-        }
-
-        public async Task RemoveRefreshTokenAsync(Guid userId, Guid token)
-        {
-            RemoveAllExpiredRefreshTokensQuery(userId);
-
-            if (await _dbContext.Users.FindAsync(userId) == null)
-            {
-                throw new UserNotFoundException();
-            }
-
-            var tokenToDelete = await _dbContext.RefreshTokens.Where(x => (x.UserId == userId) && (x.Token == token)).FirstOrDefaultAsync();
+            var tokenToDelete = await _dbContext.RefreshTokens.FirstOrDefaultAsync(x => x.Token == token);
 
             if (tokenToDelete == null)
             {
@@ -74,6 +63,25 @@ namespace SuccessAppraiser.Services.Auth.Realization
             _dbContext.RefreshTokens.Remove(tokenToDelete);
 
             await _dbContext.SaveChangesAsync();
+        }
+
+        public async Task<RefreshToken?> GetValidTokenEntityAsync(string token)
+        {
+            var tokenEntity = await _dbContext.RefreshTokens.FirstOrDefaultAsync(x => x.Token == token);
+            if (tokenEntity == null)
+            {
+                // TODO: need to remove all tokens
+                return null;
+            }
+
+            if (tokenEntity.Expires <= DateTime.UtcNow)
+            {
+                return null;
+            }
+            else
+            {
+                return tokenEntity;
+            }
         }
     }
 }
