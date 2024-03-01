@@ -93,14 +93,14 @@ namespace SuccessAppraiser.Controllers.Auth
 
 
             Response.Cookies.Append("X-Refresh-Token", refreshToken.Token, new CookieOptions { HttpOnly = true,
-                SameSite = SameSiteMode.Strict, Secure = true, Expires = refreshToken.Expires });
+                SameSite = SameSiteMode.None, Secure = true, Expires = refreshToken.Expires });
 
 
             return Ok(new { AccessToken = accessToken, Username = user.UserName });
 
         }
 
-        [HttpPost]
+        [HttpGet]
         public async Task<IActionResult> Refresh()
         {
             if (!Request.Cookies.ContainsKey("X-Refresh-Token"))
@@ -128,7 +128,7 @@ namespace SuccessAppraiser.Controllers.Auth
             Response.Cookies.Append("X-Refresh-Token", refreshToken.Token, new CookieOptions
             {
                 HttpOnly = true,
-                SameSite = SameSiteMode.Strict,
+                SameSite = SameSiteMode.None,
                 Secure = true,
                 Expires = refreshToken.Expires
             });
