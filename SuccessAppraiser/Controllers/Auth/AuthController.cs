@@ -108,7 +108,6 @@ namespace SuccessAppraiser.Controllers.Auth
                 return Unauthorized("No refresh token");
             }
 
-
             string token = Request.Cookies["X-Refresh-Token"]!;
             var oldRefreshToken = await _tokenService.GetValidTokenEntityAsync(token);
             if (oldRefreshToken == null)

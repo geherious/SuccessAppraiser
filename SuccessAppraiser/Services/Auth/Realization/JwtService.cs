@@ -44,8 +44,7 @@ namespace SuccessAppraiser.Services.Auth.Realization
             {
                 case TokenType.Accesstoken:
                     int minutes = int.Parse(_configuration.GetSection("JWT:AccessTokenMinutes").Value);
-                    //return DateTime.UtcNow.AddMinutes(minutes);
-                    return DateTime.UtcNow.AddSeconds(minutes);
+                    return DateTime.UtcNow.AddMinutes(minutes);
                 case TokenType.RefreshToken:
                     int days = int.Parse(_configuration.GetSection("JWT:RefreshTokenDays").Value);
                     return DateTime.UtcNow.AddDays(days);

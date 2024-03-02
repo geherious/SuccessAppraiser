@@ -5,7 +5,7 @@ import useAuth from "./useAuth";
 
 const useAxiosPrivate = () => {
     const refresh = useRefreshToken();
-    const { auth } = useAuth();
+    const { auth, setAuth } = useAuth();
 
     useEffect(() => {
 
@@ -21,12 +21,16 @@ const useAxiosPrivate = () => {
         const responseIntercept = axiosPrivate.interceptors.response.use(
             response => response,
             async (error) => {
-                const prevRequest = error?.config;
-                if (error?.response?.status === 401 && !prevRequest?.sent) {
-                    prevRequest.sent = true;
+                let config = error?.config;
+                if (error?.response?.status === 401 && !config?.sent) {
+                    config.sent = true;
                     const newAccessToken = await refresh();
-                    prevRequest.headers['Authorization'] = `Bearer ${newAccessToken}`;
-                    return axiosPrivate(prevRequest);
+                    if (!newAccessToken){
+                        setAuth({});
+                        return Promise.reject(error);
+                    }
+                    config.headers['Authorization'] = `Bearer ${newAccessToken}`;
+                    return axiosPrivate(config);
                 }
                 return Promise.reject(error);
             }
