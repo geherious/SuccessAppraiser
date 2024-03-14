@@ -136,6 +136,26 @@ namespace SuccessAppraiser.Controllers.Auth
             return Ok(new { AccessToken = accessToken, Username = refreshToken.User.UserName });
         }
 
+        [HttpGet]
+        public async Task<IActionResult> Logout()
+        {
+            if (!Request.Cookies.ContainsKey("X-Refresh-Token"))
+            {
+                return Forbid("No refresh token");
+            }
+
+            string token = Request.Cookies["X-Refresh-Token"]!;
+            var oldRefreshToken = await _tokenService.GetValidTokenEntityAsync(token);
+            if (oldRefreshToken == null)
+            {
+                return Forbid("Bad refresh token");
+            }
+
+            await _tokenService.RemoveRefreshTokenAsync(oldRefreshToken);
+
+            return Ok();
+        }
+
 
     }
 }

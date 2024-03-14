@@ -1,6 +1,10 @@
 html, body, #root {
-  min-height: 100vh;
-  min-width: 100vw;
+
+  min-width: 320px;
+  min-height: 480px;
+  height: 100vh;
+  width: 100vw;
+  font-size: 3vh;
 }
 
 .App {
@@ -10,8 +14,6 @@ html, body, #root {
   align-items: center;
   min-height: 100vh; 
   min-width: 100vw;
-  padding: 1rem 1.5rem;
-  font-size: 18px;
 }
 
 .hide {

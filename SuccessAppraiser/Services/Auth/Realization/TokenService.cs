@@ -65,6 +65,12 @@ namespace SuccessAppraiser.Services.Auth.Realization
             await _dbContext.SaveChangesAsync();
         }
 
+        public async Task RemoveRefreshTokenAsync(RefreshToken token)
+        {
+            _dbContext.RefreshTokens.Remove(token);
+            await _dbContext.SaveChangesAsync();
+        }
+
         public async Task<RefreshToken?> GetValidTokenEntityAsync(string token)
         {
             var tokenEntity = await _dbContext.RefreshTokens.FirstOrDefaultAsync(x => x.Token == token);

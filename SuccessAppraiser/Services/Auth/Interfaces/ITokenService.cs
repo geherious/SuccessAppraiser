@@ -6,6 +6,7 @@ namespace SuccessAppraiser.Services.Auth.Interfaces
     {
         Task<RefreshToken> AddRefreshTokenAsync(Guid userId);
         Task RemoveRefreshTokenAsync(string token);
+        Task RemoveRefreshTokenAsync(RefreshToken token);
         Task<RefreshToken?> GetValidTokenEntityAsync(string token);
     }
 }

@@ -5,21 +5,12 @@ const useRefreshToken = () => {
     const { setAuth } = useAuth();
 
     const refresh = async () => {
-        let token = '';
-        await instance.get('/auth/refresh', {
+        const response = await instance.get('/auth/refresh', {
             withCredentials: true
-        })
-        .then(success => {
-            setAuth(prev => {
-                return { ...prev, accessToken: success.data.accessToken }
-            });
-            token = success.data.accessToken;
-        })
-        .catch(() => {
-            token = null;
         });
+        setAuth(response.data);
 
-        return token;
+        return response.data.accessToken;
     }
     return refresh;
 };

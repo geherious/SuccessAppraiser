@@ -8,7 +8,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 const LOGIN_URL = '/auth/login';
 
 const Login = () => {
-    const {setAuth} = useAuth();
+    const {setAuth, persist, setPersist} = useAuth();
 
     const navigate = useNavigate();
     const location = useLocation();
@@ -63,6 +63,15 @@ const Login = () => {
         }
         setPending(false);
     }
+
+    const togglePersist = () => {
+        setPersist(prev => !prev)
+    }
+
+    useEffect(() => {
+        localStorage.setItem("persist", persist);
+    }, [persist])
+
   return (
     <section className='loginsection d-flex flex-column'>
         <p ref={errRef} className={errMsg ? "errmsg" : "hide"}>{errMsg}</p>
@@ -91,6 +100,19 @@ const Login = () => {
                     value={pwd}
                     required
                 />
+            </div>
+            <div className="form-check">
+                <input
+                    className="form-check-input"
+                    type="checkbox"
+                    value=""
+                    id="persist"
+                    onChange={togglePersist}
+                    checked={persist}
+                />
+                <label className="form-check-label" htmlFor="persist">
+                    Trust this device?
+                </label>
             </div>
             <button disabled={pending} className='btn btn-primary'>Sign In</button>
         </form>

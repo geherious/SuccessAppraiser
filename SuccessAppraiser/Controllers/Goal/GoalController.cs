@@ -10,7 +10,7 @@ using System.Security.Claims;
 namespace SuccessAppraiser.Controllers.Goal
 {
     [ApiController]
-    [Route("work-space/[action]")]
+    [Route("[action]")]
     [Authorize]
     public class GoalController : ControllerBase
     {
@@ -36,7 +36,7 @@ namespace SuccessAppraiser.Controllers.Goal
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddGoal([FromBody] AddGoalDto goalDto, CancellationToken ct)
+        public async Task<IActionResult> Goals([FromBody] AddGoalDto goalDto, CancellationToken ct)
         {
             Guid userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
 

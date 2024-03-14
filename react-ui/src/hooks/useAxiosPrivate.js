@@ -24,8 +24,11 @@ const useAxiosPrivate = () => {
                 let config = error?.config;
                 if (error?.response?.status === 401 && !config?.sent) {
                     config.sent = true;
-                    const newAccessToken = await refresh();
-                    if (!newAccessToken){
+                    var newAccessToken;
+                    try {
+                        newAccessToken = refresh();
+                    }
+                    catch (err){
                         setAuth({});
                         return Promise.reject(error);
                     }
