@@ -15,13 +15,13 @@ function App() {
   return (
     <Routes>
       <Route path='/' element={<MainLayout/>}>
-      <Route element={<PersistLogin/>}>
         {/* public routes */}
         <Route path='login' element={<Login/>}/>
         <Route path='register' element={<Register/>}/>
         <Route path='/' element={<Welcome/>}/>
         <Route path='/policy' element={<Policy/>}/>
 
+        <Route element={<PersistLogin/>}>
         {/* private routes */}
         <Route element={<RequireAuth/>}>
           <Route path="home" element={<Home/>} />

@@ -3,7 +3,6 @@ import PlusImg from '../../../public/images/plus.png'
 
 
 const SideBar = ({goals, goalError, goalMutate}) => {
-
   // const goalList = goals.map(goal => <li>{goal}</li>)
 
   return (
