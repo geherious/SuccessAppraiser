@@ -11,7 +11,6 @@ const RequireAuth = () => {
       auth?.accessToken ?
       <Outlet/> :
         <Navigate to='/login' replace/>
-        // <p>Denied</p>
   )
 }
 
