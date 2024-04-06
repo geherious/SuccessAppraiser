@@ -1,5 +1,5 @@
 import './SideBar.css';
-import PlusImg from '../../../public/images/plus.png';
+import plusImg from '../../../public/images/home/plus.png';
 import useGoal from '../../hooks/useGoal';
 
 
@@ -12,7 +12,7 @@ const SideBar = () => {
     content = 
     <>
         <button type='button' className='add-button'>
-        <img src={PlusImg} alt='Add' className='add-icon'/>
+        <img src={plusImg} alt='Add' className='add-icon'/>
         </button>
         <ul>
           {goals.data.map(goal => <li key={goal.id}>{goal.name}</li>)}
@@ -26,7 +26,7 @@ const SideBar = () => {
     content = <p>Error</p>
   }
   return (
-    <div className='col-md-2 side-bar'>
+    <div className='side-bar'>
         {content}
     </div>
   )

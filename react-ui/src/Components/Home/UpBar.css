@@ -1,3 +1,7 @@
 .options-bar {
     background-color: blue;
 }
+
+.logo-span {
+    padding: 0 8px;
+}

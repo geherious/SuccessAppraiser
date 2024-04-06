@@ -1,0 +1,41 @@
+.calendar-body {
+    font-size: .7rem; 
+    display: grid;
+    gap: 0px;
+    padding: 0px;
+    height: 100%;
+    width: 100%;
+    min-height: 180px;
+    min-width: 300px;
+
+}
+
+.grid-35 {
+    grid-template-columns: repeat(7, 1fr);
+    grid-template-rows: repeat(5, 1fr);
+}
+
+.grid-42 {
+    grid-template-columns: repeat(7, 1fr);
+    grid-template-rows: repeat(6, 1fr);
+}
+
+.calendar-cell {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    --shadow-color: #c7c6c6;
+    box-shadow: 
+    2px 0 0 0 var(--shadow-color), 
+    0 2px 0 0 var(--shadow-color), 
+    2px 2px 0 0 var(--shadow-color),
+    2px 0 0 0 var(--shadow-color) inset, 
+    0 2px 0 0 var(--shadow-color) inset;
+}
+
+.calendar-cell :last-child {
+    position: absolute;
+    top: 50%;
+  }

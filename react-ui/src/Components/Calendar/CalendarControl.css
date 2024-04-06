@@ -1,0 +1,28 @@
+.calendar-control {
+    display: flex;
+    flex-direction: row;
+    justify-content:flex-start;
+    align-items:baseline;
+    font-size: 1.2rem;
+}
+
+.control-button {
+    height: 32px;
+    width: 32px;
+    padding: 3px;
+    border: none;
+    background: rgba(0, 0, 0, 0);
+}
+.control-image {
+    width: 80%;
+    height: 80%;
+    display: block;
+    margin: auto;
+}
+
+.reverse-image {
+    transform: scaleX(-1);
+}
+.date {
+    vertical-align: baseline;
+}

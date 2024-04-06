@@ -16,7 +16,9 @@ const Home = () => {
       <div className='container-fluid home'>
         <UpBar/>
         <div className='row no-gutters flex-grow-1 calendar-window'>
-          <SideBar/>
+          <div className='col-md-2 p-0'>
+            <SideBar/>
+          </div>
           <div className='col p-0'>
             <CalendarBody/>
           </div>

@@ -1,8 +1,16 @@
 .side-bar {
-    border-right: solid;
     padding: 8px;
     display: flex;
     flex-direction: column;
+    height: 100%;
+    width: 100%;
+
+    --shadow-color: #c7c6c6;
+    box-shadow: 
+    2px 0 0 0 var(--shadow-color), 
+    0 2px 0 0 var(--shadow-color), 
+    2px 2px 0 0 var(--shadow-color),
+    0 2px 0 0 var(--shadow-color) inset;
 }
 
 .add-button {
