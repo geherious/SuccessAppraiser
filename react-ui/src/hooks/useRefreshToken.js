@@ -8,9 +8,12 @@ const refreshUrl = 'auth/refresh'
 const useRefreshToken = () => {
     const { setAuth } = useAuth();
     
-    const refresh = async () => {
+    const refresh = async (signal = null) => {
         var token = null;
-        await instance.get(refreshUrl)
+        await instance.get(refreshUrl,
+        {
+            signal: signal
+        })
         .then(res => {
             token = res?.data?.accessToken
             setAuth(res?.data)

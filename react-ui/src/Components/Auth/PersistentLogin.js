@@ -7,13 +7,14 @@ const PersistLogin = () => {
     const [isLoading, setIsLoading] = useState(true);
     const refresh = useRefreshToken();
     const { auth, persist } = useAuth();
+    const controller = new AbortController();
 
     useEffect(() => {
         let isMounted = true;
 
         const verifyRefreshToken = async () => {
             try {
-                await refresh();
+                await refresh(controller.signal);
             }
             finally {
                 isMounted && setIsLoading(false);
@@ -22,7 +23,10 @@ const PersistLogin = () => {
 
         !auth?.accessToken && persist ? verifyRefreshToken() : setIsLoading(false);
 
-        return () => isMounted = false;
+        return () => {
+            isMounted = false;
+            controller.abort();
+        };
     }, [])
 
     return (

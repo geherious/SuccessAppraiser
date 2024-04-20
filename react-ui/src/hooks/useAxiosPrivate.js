@@ -7,6 +7,7 @@ const useAxiosPrivate = () => {
     const refresh = useRefreshToken();
     const { auth, setAuth } = useAuth();
     const [isConfiguring, setIsConfiguring] = useState(true);
+    const controller = new AbortController();
 
     useEffect(() => {
         setIsConfiguring(true);
@@ -23,7 +24,7 @@ const useAxiosPrivate = () => {
                 let config = error?.config;
                 if (error?.response?.status === 401 && !config?.sent) {
                     config.sent = true;
-                    let newAccessToken = refresh();
+                    let newAccessToken = refresh(controller.signal);
                     config.headers['Authorization'] = `Bearer ${newAccessToken}`;
                     return axiosPrivate(config);
                 }
@@ -36,6 +37,7 @@ const useAxiosPrivate = () => {
         return () => {
             axiosPrivate.interceptors.request.eject(requestIntercept);
             axiosPrivate.interceptors.response.eject(responseIntercept);
+            controller.abort();
         }
     }, [auth])
 

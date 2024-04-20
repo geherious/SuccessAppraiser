@@ -19,12 +19,12 @@ namespace SuccessAppraiser.Services.Auth.Realization
             _configuration = configuration;
             _jwtService = jwtService;
         }
-        public async Task<RefreshToken> AddRefreshTokenAsync(Guid userId)
+        public async Task<RefreshToken> AddRefreshTokenAsync(Guid userId, CancellationToken ct = default)
         {
 
             int expriresInDays = int.Parse(_configuration.GetSection("JWT:RefreshTokenDays").Value);
 
-            if (await _dbContext.Users.FindAsync(userId) == null)
+            if (await _dbContext.Users.FindAsync(userId, ct) == null)
             {
                 throw new UserNotFoundException();
             }
@@ -41,19 +41,19 @@ namespace SuccessAppraiser.Services.Auth.Realization
                 Expires = DateTime.UtcNow.AddDays(expriresInDays)
             };
 
-            await _dbContext.RefreshTokens.AddAsync(newToken);
+            await _dbContext.RefreshTokens.AddAsync(newToken, ct);
 
-            await _dbContext.SaveChangesAsync();
+            await _dbContext.SaveChangesAsync(ct);
             
 
             return newToken;
 
         }
 
-        public async Task RemoveRefreshTokenAsync(string token)
+        public async Task RemoveRefreshTokenAsync(string token, CancellationToken ct = default)
         {
 
-            var tokenToDelete = await _dbContext.RefreshTokens.FirstOrDefaultAsync(x => x.Token == token);
+            var tokenToDelete = await _dbContext.RefreshTokens.FirstOrDefaultAsync(x => x.Token == token, ct);
 
             if (tokenToDelete == null)
             {
@@ -62,18 +62,18 @@ namespace SuccessAppraiser.Services.Auth.Realization
 
             _dbContext.RefreshTokens.Remove(tokenToDelete);
 
-            await _dbContext.SaveChangesAsync();
+            await _dbContext.SaveChangesAsync(ct);
         }
 
-        public async Task RemoveRefreshTokenAsync(RefreshToken token)
+        public async Task RemoveRefreshTokenAsync(RefreshToken token, CancellationToken ct = default)
         {
             _dbContext.RefreshTokens.Remove(token);
-            await _dbContext.SaveChangesAsync();
+            await _dbContext.SaveChangesAsync(ct);
         }
 
-        public async Task<RefreshToken?> GetValidTokenEntityAsync(string token)
+        public async Task<RefreshToken?> GetValidTokenEntityAsync(string token, CancellationToken ct = default)
         {
-            var tokenEntity = await _dbContext.RefreshTokens.FirstOrDefaultAsync(x => x.Token == token);
+            var tokenEntity = await _dbContext.RefreshTokens.FirstOrDefaultAsync(x => x.Token == token, ct);
             if (tokenEntity == null)
             {
                 // TODO: need to remove all tokens

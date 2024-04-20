@@ -101,7 +101,7 @@ namespace SuccessAppraiser.Controllers.Auth
         }
 
         [HttpGet]
-        public async Task<IActionResult> Refresh()
+        public async Task<IActionResult> Refresh(CancellationToken ct)
         {
             if (!Request.Cookies.ContainsKey("X-Refresh-Token"))
             {
@@ -109,7 +109,7 @@ namespace SuccessAppraiser.Controllers.Auth
             }
 
             string token = Request.Cookies["X-Refresh-Token"]!;
-            var oldRefreshToken = await _tokenService.GetValidTokenEntityAsync(token);
+            var oldRefreshToken = await _tokenService.GetValidTokenEntityAsync(token, ct);
             if (oldRefreshToken == null)
             {
                 return Unauthorized("Bad refresh token");
@@ -121,8 +121,8 @@ namespace SuccessAppraiser.Controllers.Auth
             ];
 
             var accessToken = _jwtService.GenerateToken(userClaims, TokenType.Accesstoken);
-            var refreshToken = await _tokenService.AddRefreshTokenAsync(oldRefreshToken.UserId);
-            await _tokenService.RemoveRefreshTokenAsync(token);
+            var refreshToken = await _tokenService.AddRefreshTokenAsync(oldRefreshToken.UserId, ct);
+            await _tokenService.RemoveRefreshTokenAsync(token, ct);
 
             Response.Cookies.Append("X-Refresh-Token", refreshToken.Token, new CookieOptions
             {
