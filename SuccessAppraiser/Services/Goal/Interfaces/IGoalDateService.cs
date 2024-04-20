@@ -1,10 +1,11 @@
 ﻿using SuccessAppraiser.Contracts.Goal;
+using SuccessAppraiser.Entities;
 
 namespace SuccessAppraiser.Services.Goal.Interfaces
 {
     public interface IGoalDateService
     {
-        bool DateAlreadyExists(DateOnly date);
-        void AddGoalDate(GoalDateDto dateDto);
+        Task<GoalDate> AddGoalDateAsync(AddGoalDateDto dateDto, CancellationToken ct = default);
+        Task<IList<GetGoalDateDto>> GetGoalDatesByMonth(DateOnly date, Guid goalId, CancellationToken ct = default);
     }
 }

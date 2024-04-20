@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using SuccessAppraiser.Contracts.Goal;
 using SuccessAppraiser.Data.Context;
 using SuccessAppraiser.Entities;
+using SuccessAppraiser.Services.Goal.Errors;
 using SuccessAppraiser.Services.Goal.Interfaces;
 
 namespace SuccessAppraiser.Services.Goal.Realization
@@ -21,6 +22,12 @@ namespace SuccessAppraiser.Services.Goal.Realization
 
         public async Task<GoalItem> AddGoalAsync(Guid userId, AddGoalDto addGoalDto, CancellationToken ct = default)
         {
+            var template = _dbContext.GoalTemplates.Find(addGoalDto.TemplateId);
+            if (template == null)
+            {
+                throw new InvalidTemplateException();
+            }
+
             GoalItem newGoal = _mapper.Map<GoalItem>(addGoalDto);
             newGoal.UserId = userId;
             await _dbContext.GoalItems.AddAsync(newGoal, ct);
@@ -38,7 +45,7 @@ namespace SuccessAppraiser.Services.Goal.Realization
             }
             else
             {
-                throw new NullReferenceException("There is no such goal with provided Id");
+                throw new GoalNotFoundException();
             }
         }
 

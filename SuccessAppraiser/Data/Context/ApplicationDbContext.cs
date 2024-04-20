@@ -26,6 +26,10 @@ namespace SuccessAppraiser.Data.Context
             builder.Entity<RefreshToken>()
                 .HasIndex(x => x.Token)
                 .IsUnique();
+
+            builder.Entity<GoalDate>()
+                .HasIndex(x => new { x.GoalId, x.Date })
+                .IsUnique();
         }
     }
 }

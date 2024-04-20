@@ -8,6 +8,7 @@ namespace SuccessAppraiser.Services.Goal
         public static void RegisterGoalServices(IServiceCollection services)
         {
             services.AddScoped<IGoalService, GoalService>();
+            services.AddScoped<IGoalDateService, GoalDateService>();
         }
     }
 }
