@@ -1,11 +1,12 @@
 import './SideBar.css';
 import plusImg from '../../../public/images/home/plus.png';
 import useGoal from '../../hooks/useGoal';
+import clsx from 'clsx';
 
 
 const SideBar = () => {
 
-  const { goals, goalIsLoading } = useGoal();
+  const { goals, goalIsLoading, activeGoal, setActiveGoal } = useGoal();
   let content;
 
   if (goals){
@@ -14,8 +15,10 @@ const SideBar = () => {
         <button type='button' className='add-button'>
         <img src={plusImg} alt='Add' className='add-icon'/>
         </button>
-        <ul>
-          {goals.data.map(goal => <li key={goal.id}>{goal.name}</li>)}
+        <ul className='goal-list'>
+          {goals.map(goal =>
+          <li key={goal.id} onClick={() => setActiveGoal(goal.id)} className={clsx(goal.id === activeGoal && 'active-goal')}>{goal.name}</li>
+          )}
         </ul>
     </>
   }

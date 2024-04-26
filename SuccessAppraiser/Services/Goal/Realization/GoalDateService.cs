@@ -18,12 +18,25 @@ namespace SuccessAppraiser.Services.Goal.Realization
             _dbContext = dbContext;
             _mapper = mapper;
         }
-        public async Task<GoalDate> AddGoalDateAsync(AddGoalDateDto dateDto, CancellationToken ct = default)
+        public async Task<GetGoalDateDto> AddGoalDateAsync(AddGoalDateDto dateDto, CancellationToken ct = default)
         {
-            var goal = await _dbContext.GoalItems.Where(g => g.Id == dateDto.GoalId).Include(g => g.Template).ThenInclude(g => g.States).FirstOrDefaultAsync();
+            var goal = await _dbContext.GoalItems.Where(g => g.Id == dateDto.GoalId).Include(g => g.Dates).Include(g => g.Template).ThenInclude(g => g.States).FirstOrDefaultAsync();
+
+            DateOnly now = DateOnly.FromDateTime(DateTime.UtcNow);
+
+            if (dateDto.Date > now.AddDays(1) || dateDto.Date < goal!.DateStart)
+            {
+                throw new InvalidDateException();
+            }
+
             if (goal == null)
             {
                 throw new GoalNotFoundException();
+            }
+
+            if (goal.Dates.Any(d => d.Date == dateDto.Date))
+            {
+                throw new GoalDateAlreadyExistsException();
             }
 
             if (!goal.Template.States.Any(s => s.Id == dateDto.StateId))
@@ -33,18 +46,28 @@ namespace SuccessAppraiser.Services.Goal.Realization
 
             var newGoalDate = _mapper.Map<GoalDate>(dateDto);
 
-            _dbContext.GoalDates.Add(newGoalDate);
-            await _dbContext.SaveChangesAsync();
+            await _dbContext.GoalDates.AddAsync(newGoalDate, ct);
+            await _dbContext.SaveChangesAsync(ct);
 
-            return newGoalDate;
+            var result = _mapper.Map<GetGoalDateDto>(newGoalDate);
+
+            return result;
 
 
 
         }
 
-        public Task<IList<GetGoalDateDto>> GetGoalDatesByMonth(DateOnly date, Guid goalId, CancellationToken ct = default)
+        public async Task<IList<GetGoalDateDto>> GetGoalDatesByMonthAsync(GetGoalDatesByMonth dateDto, CancellationToken ct = default)
         {
-            throw new NotImplementedException();
+            var dates = await _dbContext.GoalDates.Where(d =>
+            d.GoalId == dateDto.GoalId
+            && d.Date.Month == dateDto.Date.Month
+            && d.Date.Year == dateDto.Date.Year)
+            .ToListAsync(ct);
+
+            var result = _mapper.Map<List<GetGoalDateDto>>(dates);
+
+            return result;
         }
     }
 }

@@ -6,6 +6,7 @@ using SuccessAppraiser.Contracts.Goal;
 using SuccessAppraiser.Entities;
 using SuccessAppraiser.Services.Goal.Errors;
 using SuccessAppraiser.Services.Goal.Interfaces;
+using System;
 using System.Security.Claims;
 
 namespace SuccessAppraiser.Controllers.Goal
@@ -66,22 +67,34 @@ namespace SuccessAppraiser.Controllers.Goal
                 return BadRequest("There is no such goal with provided ID");
             }
 
-            GoalDate newGoalDate;
+            GetGoalDateDto newGoalDate;
 
             try
             {
                 newGoalDate = await _goalDateService.AddGoalDateAsync(goalDateDto, ct);
             }
-            catch (GoalNotFoundException exception)
+            catch (Exception ex) when (ex is GoalNotFoundException || ex is GoalDateAlreadyExistsException ||
+                ex is InvalidStateException || ex is InvalidDateException)
             {
-                return BadRequest(exception.Message);
-            }
-            catch (InvalidStateException exception)
-            {
-                return BadRequest(exception.Message);
+                return BadRequest(ex.Message);
             }
 
+
             return Ok(newGoalDate);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> GetGoalDates([FromBody] GetGoalDatesByMonth dto, CancellationToken ct)
+        {
+            Guid userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+
+            if (!await _goalService.UserhasGoalAsync(userId, dto.GoalId))
+            {
+                return BadRequest("There is no such goal with provided ID");
+            }
+
+            var dates = await _goalDateService.GetGoalDatesByMonthAsync(dto);
+            return Ok(dates);
         }
     }
 }

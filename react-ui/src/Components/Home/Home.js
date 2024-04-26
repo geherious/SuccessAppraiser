@@ -11,8 +11,8 @@ import { CalendarProvider } from '../../Context/CalendarProvide';
 
 const Home = () => {
   return (
-    <GoalProvider>
     <CalendarProvider>
+    <GoalProvider>
       <div className='container-fluid home'>
         <UpBar/>
         <div className='row no-gutters flex-grow-1 calendar-window'>
@@ -24,8 +24,8 @@ const Home = () => {
           </div>
         </div>
       </div>
-    </CalendarProvider>
     </GoalProvider>
+    </CalendarProvider>
   )
 }
 

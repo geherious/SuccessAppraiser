@@ -16,6 +16,7 @@ const CalendarBody = () => {
   const nextMonthDates = getNextMonthDates(currentDateArea, 6 - lastWeekDay)
 
   const cells = lastMonthDates.concat(currentMonthDates, nextMonthDates);
+  console.log(cells);
 
   const cellsElements = cells => {
     let content = [];

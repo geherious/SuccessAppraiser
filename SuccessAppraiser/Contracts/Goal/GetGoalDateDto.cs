@@ -2,5 +2,5 @@
 
 namespace SuccessAppraiser.Contracts.Goal
 {
-    public record GetGoalDateDto(DateOnly Date, string? Comment, DayState State);
+    public record GetGoalDateDto(DateOnly Date, string? Comment, Guid StateId);
 }
