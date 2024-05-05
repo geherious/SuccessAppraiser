@@ -12,6 +12,7 @@ namespace SuccessAppraiser.Contracts.Goal
             CreateMap<GetUserGoalDto, GoalItem>().ReverseMap();
             CreateMap<GetGoalDateDto, GoalDate>().ReverseMap();
             CreateMap<AddGoalDateDto, GoalDate>().ReverseMap();
+            CreateMap<GetTemplateDto, GoalTemplate>().ReverseMap();
 
         }
     }

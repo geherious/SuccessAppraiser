@@ -51,7 +51,7 @@ namespace SuccessAppraiser.Services.Goal.Realization
 
         public async Task<List<GoalItem>> GetGoalsByUserIdAsync(Guid userId, CancellationToken ct = default)
         {
-            return await _dbContext.GoalItems.Where(g => g.UserId == userId).OrderBy(g => g.DateStart).ToListAsync(ct);
+            return await _dbContext.GoalItems.Include(g => g.Template).ThenInclude(t => t.States).Where(g => g.UserId == userId).OrderBy(g => g.DateStart).ToListAsync(ct);
         }
 
         public async Task<bool> UserhasGoalAsync(Guid userId, Guid goalId, CancellationToken ct = default)

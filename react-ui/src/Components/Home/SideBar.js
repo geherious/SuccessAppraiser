@@ -2,6 +2,7 @@ import './SideBar.css';
 import plusImg from '../../../public/images/home/plus.png';
 import useGoal from '../../hooks/useGoal';
 import clsx from 'clsx';
+import LoaderDots from '../Loaders/LoaderDots';
 
 
 const SideBar = () => {
@@ -17,13 +18,13 @@ const SideBar = () => {
         </button>
         <ul className='goal-list'>
           {goals.map(goal =>
-          <li key={goal.id} onClick={() => setActiveGoal(goal.id)} className={clsx(goal.id === activeGoal && 'active-goal')}>{goal.name}</li>
+          <li key={goal.id} onClick={() => setActiveGoal(goal)} className={clsx(goal === activeGoal && 'active-goal')}>{goal.name}</li>
           )}
         </ul>
     </>
   }
   else if (goalIsLoading){
-    content = <p>Loading</p>
+    content = <LoaderDots/>
   }
   else{
     content = <p>Error</p>

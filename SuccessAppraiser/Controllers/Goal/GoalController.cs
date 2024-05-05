@@ -83,8 +83,8 @@ namespace SuccessAppraiser.Controllers.Goal
             return Ok(newGoalDate);
         }
 
-        [HttpPost]
-        public async Task<IActionResult> GetGoalDates([FromBody] GetGoalDatesByMonth dto, CancellationToken ct)
+        [HttpGet]
+        public async Task<IActionResult> GetGoalDates([FromQuery] GetGoalDatesByMonth dto, CancellationToken ct)
         {
             Guid userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
 

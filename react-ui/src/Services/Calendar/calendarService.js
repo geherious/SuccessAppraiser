@@ -75,3 +75,15 @@ export const getWeekDay = (date, shift = 0) => {
     const day = date.getDay();
     return (day + 7 - shift) % 7
 }
+
+export const getNewDateNoTime = (dateString = null) => {
+    let result;
+    if (dateString){
+        result = new Date(dateString);
+    }
+    else {
+        result = new Date();
+    }
+    result.setHours(0, 0, 0, 0);
+    return result;
+}
