@@ -15,7 +15,6 @@ using Api.Filters;
 namespace SuccessAppraiser.Controllers.Goal
 {
     [ApiController]
-    [Route("[action]")]
     [Authorize]
     public class GoalController : ControllerBase
     {
@@ -31,6 +30,7 @@ namespace SuccessAppraiser.Controllers.Goal
         }
 
         [HttpGet]
+        [Route("goals")]
         public async Task<IActionResult> Goals(CancellationToken ct)
         {
             Guid userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
@@ -42,6 +42,7 @@ namespace SuccessAppraiser.Controllers.Goal
 
         [HttpPost]
         [ValidationFilter]
+        [Route("goals")]
         public async Task<IActionResult> Goals([FromBody] CreateGoalDto goalDto, CancellationToken ct)
         {
             Guid userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);

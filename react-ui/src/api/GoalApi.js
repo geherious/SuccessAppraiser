@@ -1,4 +1,4 @@
 
 export const goalsUrlEndpoint = '/goals'
 
-export const getGoalDateByMonth = '/GetGoalDates'
+export const getGoalDateByMonth = '/dates'
