@@ -8,7 +8,6 @@ using SuccessAppraiser.Data.Context;
 using SuccessAppraiser.Data.Seeding;
 using SuccessAppraiser.Data.Entities;
 using SuccessAppraiser.BLL;
-using System.Reflection;
 
 
 
@@ -89,7 +88,7 @@ namespace SuccessAppraiser
 
             builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
-            builder.Services.AddValidatorsFromAssemblyContaining<Program>();
+            builder.Services.AddValidatorsFromAssemblies(AppDomain.CurrentDomain.GetAssemblies());
 
             builder.Services.AddProjectServices();
 

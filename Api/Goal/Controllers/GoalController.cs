@@ -10,6 +10,7 @@ using SuccessAppraiser.BLL.Goal.Services.Interfaces;
 using SuccessAppraiser.Data.Entities;
 using System;
 using System.Security.Claims;
+using Api.Filters;
 
 namespace SuccessAppraiser.Controllers.Goal
 {
@@ -36,21 +37,21 @@ namespace SuccessAppraiser.Controllers.Goal
 
             var items = await _goalService.GetGoalsByUserIdAsync(userId, ct);
 
-
-
             return Ok(_mapper.Map<List<GetUserGoalDto>>(items));
         }
 
         [HttpPost]
+        [ValidationFilter]
         public async Task<IActionResult> Goals([FromBody] CreateGoalDto goalDto, CancellationToken ct)
         {
             Guid userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
 
             GoalItem newGoal;
             var command = _mapper.Map<CreateGoalCommand>(goalDto);
+            command.UserId = userId;
             try
             {
-                newGoal = await _goalService.CreateGoalAsync(userId, command, ct);
+                newGoal = await _goalService.CreateGoalAsync(command, ct);
             }
             catch (NotFoundException exception)
             {
@@ -62,6 +63,7 @@ namespace SuccessAppraiser.Controllers.Goal
         }
 
         [HttpPost]
+        [ValidationFilter]
         public async Task<IActionResult> GoalDate([FromBody] CreateGoalDateDto goalDateDto, CancellationToken ct)
         {
             Guid userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
@@ -90,6 +92,7 @@ namespace SuccessAppraiser.Controllers.Goal
         }
 
         [HttpGet]
+        [ValidationFilter]
         public async Task<IActionResult> GetGoalDates([FromQuery] GetGoalDatesByMonthDto dto, CancellationToken ct)
         {
             Guid userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);

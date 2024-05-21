@@ -4,7 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace SuccessAppraiser.BLL
 {
-    public static class DI
+    public static class DependencyInjection
     {
         public static IServiceCollection AddProjectServices(this IServiceCollection services)
         {

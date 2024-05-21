@@ -33,7 +33,7 @@ namespace Api.Auth.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Register([FromBody] NewRegisterDto dto)
+        public async Task<IActionResult> Register([FromBody] RegisterDto dto)
         {
             if (!ModelState.IsValid)
             {

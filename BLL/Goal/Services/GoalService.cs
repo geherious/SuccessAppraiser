@@ -19,7 +19,7 @@ namespace SuccessAppraiser.BLL.Goal.Services
             _mapper = mapper;
         }
 
-        public async Task<GoalItem> CreateGoalAsync(Guid userId, CreateGoalCommand createCommand, CancellationToken ct = default)
+        public async Task<GoalItem> CreateGoalAsync(CreateGoalCommand createCommand, CancellationToken ct = default)
         {
             var template = _dbContext.GoalTemplates.Find(createCommand.TemplateId);
             if (template == null)
@@ -28,7 +28,7 @@ namespace SuccessAppraiser.BLL.Goal.Services
             }
 
             GoalItem newGoal = _mapper.Map<GoalItem>(createCommand);
-            newGoal.UserId = userId;
+            newGoal.UserId = createCommand.UserId;
             await _dbContext.GoalItems.AddAsync(newGoal, ct);
             await _dbContext.SaveChangesAsync(ct);
             return newGoal;
