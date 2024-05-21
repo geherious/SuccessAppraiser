@@ -7,6 +7,8 @@ using SuccessAppraiser.BLL.Auth.Contracts;
 using SuccessAppraiser.BLL.Auth.Services.Interfaces;
 using SuccessAppraiser.Data.Entities;
 using System.Security.Claims;
+using Api.Filters;
+using SuccessAppraiser.BLL.Auth.Errors;
 
 namespace Api.Auth.Controllers
 {
@@ -33,34 +35,35 @@ namespace Api.Auth.Controllers
         }
 
         [HttpPost]
+        [ValidationFilter]
         public async Task<IActionResult> Register([FromBody] RegisterDto dto)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
             var command = _mapper.Map<RegisterCommand>(dto);
 
             if (await _authService.UserAlreadyExistAsync(command))
             {
                 return Conflict(new { message = "User already exists" });
             }
-
-            await _authService.RegisterAsync(command);
+            try
+            {
+                await _authService.RegisterAsync(command);
+            }
+            catch (RegisterException ex)
+            {
+                foreach (var error in ex.Errors)
+                {
+                    ModelState.TryAddModelError(error.Code, error.Description);
+                }
+                return BadRequest(ModelState);
+            }
             return Ok();
 
         }
 
         [HttpPost]
+        [ValidationFilter]
         public async Task<IActionResult> Login([FromBody] LoginDto dto)
         {
-
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
             var user = await _userManager.FindByEmailAsync(dto.Email);
 
             if (user == null)

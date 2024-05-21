@@ -29,7 +29,7 @@ namespace Api.Filters
                 }
 
                 var validationResult = validator.Validate(new ValidationContext<object>(argument));
-                if (!validationResult.IsValid)
+                if (!validationResult.IsValid || !context.ModelState.IsValid)
                 {
                     foreach (var error in validationResult.Errors)
                     {
