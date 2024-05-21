@@ -64,6 +64,7 @@ namespace SuccessAppraiser.Controllers.Goal
 
         [HttpPost]
         [ValidationFilter]
+        [Route("dates")]
         public async Task<IActionResult> GoalDate([FromBody] CreateGoalDateDto goalDateDto, CancellationToken ct)
         {
             Guid userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
@@ -93,6 +94,7 @@ namespace SuccessAppraiser.Controllers.Goal
 
         [HttpGet]
         [ValidationFilter]
+        [Route("dates")]
         public async Task<IActionResult> GetGoalDates([FromQuery] GetGoalDatesByMonthDto dto, CancellationToken ct)
         {
             Guid userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
