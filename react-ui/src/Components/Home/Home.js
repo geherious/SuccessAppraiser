@@ -4,14 +4,13 @@ import { GoalProvider } from '../../Context/GoalProvide';
 import UpBar from './UpBar';
 import CalendarBody from '../Calendar/CalendarBody';
 import { CalendarProvider } from '../../Context/CalendarProvide';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import DateModal from './DateModal';
 
 
 const Home = () => {
 
-  const [isActive, setIsActive] = useState(true);
-
+  const [isActive, setIsActive] = useState(false);
   return (
     <CalendarProvider>
     <GoalProvider>

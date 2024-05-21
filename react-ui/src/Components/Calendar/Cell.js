@@ -2,6 +2,7 @@ import './Cell.css';
 import useGoal from "../../hooks/useGoal";
 import clsx from 'clsx';
 import { getNewDateNoTime } from '../../Services/Calendar/calendarService';
+import { useRef } from 'react';
 
 
 const Cell = ({ date, dateShift, cellNumber }) => {
@@ -29,8 +30,8 @@ const Cell = ({ date, dateShift, cellNumber }) => {
 
     const createStatusSpan = () => {
         let statusEl;
-        if (activeGoal && dates && dates.length > 0) {
-            if (dateShift < dates.length && date.getTime() === getNewDateNoTime(dates[dateShift].date).getTime()) {
+        if (activeGoal && dates) {
+            if (dates.length > 0 && dateShift < dates.length && date.getTime() === getNewDateNoTime(dates[dateShift].date).getTime()) {
                 let status = activeGoal.template.states.find(state => state.id === dates[dateShift].stateId)
                 statusEl = spanFactory(status)
                 dateShift++;

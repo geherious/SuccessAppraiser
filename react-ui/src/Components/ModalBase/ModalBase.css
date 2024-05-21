@@ -20,6 +20,8 @@
 
 .modal-content{
     max-width: max(30vw, 500px);
+    margin-left: 5%;
+    margin-right: 5%;
     padding: 8px 15px;
     background-color: white;
     border-radius: 12px;
