@@ -11,6 +11,7 @@ import DateModal from './DateModal';
 const Home = () => {
 
   const [isActive, setIsActive] = useState(false);
+  const [modalDate, setModalDate] = useState(new Date());
   return (
     <CalendarProvider>
     <GoalProvider>
@@ -21,10 +22,10 @@ const Home = () => {
             <SideBar/>
           </div>
           <div className='col p-0'>
-            <CalendarBody/>
+            <CalendarBody setIsActive={setIsActive} setModalDate={setModalDate}/>
           </div>
         </div>
-        <DateModal isActive={isActive} setIsActive={setIsActive}></DateModal>
+        <DateModal isActive={isActive} setIsActive={setIsActive} date={modalDate}></DateModal>
       </div>
     </GoalProvider>
     </CalendarProvider>

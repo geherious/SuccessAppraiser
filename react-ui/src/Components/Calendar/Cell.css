@@ -4,23 +4,14 @@
     flex-direction: column;
     align-items: center;
     justify-content: flex-start;
-
-
-}
-
-.calendar-cell::after{
-    content: '';
-    position: absolute;
-    top: 0%;
-    left: 0%;
-    width: 100%;
-    height: 100%;
     --shadow-color: #c7c6c6;
     box-shadow: 
     1px 0 0 0 var(--shadow-color) inset, 
     -1px 0 0 0 var(--shadow-color) inset, 
     0 2px 0 0 var(--shadow-color) inset;
 }
+
+
 
 .cell-status{
     width: 100%;

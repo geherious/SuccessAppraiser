@@ -8,4 +8,15 @@
 .date-modal-body {
     display: flex;
     flex-direction: column;
+    margin-bottom: 10px;
+}
+
+.date-modal-footer {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+}
+.date-modal-footer > * {
+    margin-right: 5px;
 }

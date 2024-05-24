@@ -1,48 +1,46 @@
 import './Cell.css';
 import useGoal from "../../hooks/useGoal";
 import clsx from 'clsx';
-import { getNewDateNoTime } from '../../Services/Calendar/calendarService';
+import { getStartAndEndDate } from '../../Services/Calendar/calendarService';
 import { useRef } from 'react';
 
 
-const Cell = ({ date, dateShift, cellNumber }) => {
-
+const Cell = ({ date, dateShift, isDateWithState, cellNumber, setIsActive, setModalDate }) => {
     const {activeGoal, dates} = useGoal();
 
     const weekDaysNames = ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'];
     const statelessColor = '#ADADAD';
 
     const spanFactory = (state = null) => {
-        const startDate = getNewDateNoTime(activeGoal.dateStart);
-        const goalEnd = getNewDateNoTime(activeGoal.dateStart);
-        goalEnd.setDate(startDate.getDate() + activeGoal.daysNumber);
-        const now = getNewDateNoTime();
-        const endDay = now <= goalEnd ? now : goalEnd;
-
         let statusEl =
             <span
                 style={state ? { backgroundColor: state.color } : { backgroundColor: statelessColor }}
-                className={clsx(startDate <= date && date <= endDay && 'cell-status')}
+                className={'cell-status'}
+                onClick={() => {
+                    if (!state){
+                        setIsActive(true);
+                        setModalDate(date);
+                    }
+                }}
             >
             </span>
         return statusEl
     }
 
     const createStatusSpan = () => {
-        let statusEl;
+        let statusEl = null;
         if (activeGoal && dates) {
-            if (dates.length > 0 && dateShift < dates.length && date.getTime() === getNewDateNoTime(dates[dateShift].date).getTime()) {
+            const {startDate, endDate} = getStartAndEndDate(new Date(activeGoal.dateStart), activeGoal.daysNumber);
+            if (isDateWithState) {
                 let status = activeGoal.template.states.find(state => state.id === dates[dateShift].stateId)
                 statusEl = spanFactory(status)
-                dateShift++;
             }
-            else {
+            else if (date.getTime() >= startDate.getTime() && date.getTime() <= endDate.getTime()) {
                 statusEl = spanFactory(null)
             }
         }
         return statusEl;
     }
-
     const dateEl = date.getDate();
     const statusEl = createStatusSpan();
 
@@ -54,8 +52,7 @@ const Cell = ({ date, dateShift, cellNumber }) => {
                 <span>{dateEl + ' ' + date.toLocaleString('en-us', { month: 'short' })}</span> :
                 <span>{dateEl}</span>
             }
-
-            {statusEl ?? statusEl}
+            {statusEl}
         </div>
     )
 }

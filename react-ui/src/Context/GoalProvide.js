@@ -1,37 +1,55 @@
 import { createContext, useEffect, useState } from "react";
 import useSWR from "swr";
 import useAxiosPrivate from "../hooks/useAxiosPrivate";
-import { goalsUrlEndpoint, getGoalDateByMonth } from "../api/GoalApi";
-import useAuth from "../hooks/useAuth";
+import { goalsUrlEndpoint, getGoalDateByMonth } from "../api/goalApi";
 import useCalendar from "../hooks/useCalendar";
 
 const GoalContext = createContext({});
 
 export const GoalProvider = ({children}) => {
     const { isConfiguring, axiosPrivate } = useAxiosPrivate();
-    const { auth } = useAuth();
     const {
         data: goals,
         error: goalError,
         mutate: goalMutate,
         isLoading: goalIsLoading
-    } = useSWR(auth.accessToken && !isConfiguring ? goalsUrlEndpoint : null, axiosPrivate.get, {revalidateOnFocus: false});
+    } = useSWR( !isConfiguring ? goalsUrlEndpoint : null, axiosPrivate.get, {revalidateOnFocus: false});
     const [activeGoal, setActiveGoal] = useState(null);
 
     const {currentDateArea} = useCalendar();
-    const year = currentDateArea.getFullYear();
-    const month = String(currentDateArea.getMonth() + 1).padStart(2, '0');
+    const lastMonth = new Date(currentDateArea.getFullYear(), currentDateArea.getMonth() - 1, 1);
+    const nextMonth = new Date(currentDateArea.getFullYear(), currentDateArea.getMonth() + 1, 1);
 
-    const key = getGoalDateByMonth + activeGoal?.id + year + month;
+    const getKeyWithArgs = (date) => {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        return {url: getGoalDateByMonth + activeGoal?.id + year + month, year, month};
+    }
 
-    const {
-        data: dates
-    } = useSWR(activeGoal ? key : null, () => axiosPrivate.get(getGoalDateByMonth, {params:{
-        date: `${year}-${month}-01`,
+    const { data: lastMonthDates } = useSWR(!isConfiguring && activeGoal ? getKeyWithArgs(lastMonth) : null,
+        (args) => axiosPrivate.get(getGoalDateByMonth, {params:{
+        date: `${args.year}-${args.month}-01`,
         goalId: activeGoal.id
     }}), {revalidateOnFocus: false, revalidateIfStale: false});
 
+    const { data: currentMonthDates } = useSWR(!isConfiguring && activeGoal ? getKeyWithArgs(currentDateArea) : null,
+    (args) => axiosPrivate.get(getGoalDateByMonth, {params:{
+    date: `${args.year}-${args.month}-01`,
+    goalId: activeGoal.id
+    }}), {revalidateOnFocus: false, revalidateIfStale: false});
 
+    const { data: nextMonthDates } = useSWR(!isConfiguring && activeGoal ? getKeyWithArgs(nextMonth) : null,
+    (args) => axiosPrivate.get(getGoalDateByMonth, {params:{
+    date: `${args.year}-${args.month}-01`,
+    goalId: activeGoal.id
+    }}), {revalidateOnFocus: false, revalidateIfStale: false});
+
+    const [dates, setDates] = useState(null);
+    useEffect(() => {
+        if (lastMonthDates && currentMonthDates && nextMonthDates) {
+            setDates([...lastMonthDates.data, ...currentMonthDates.data, ...nextMonthDates.data]);
+        }
+    }, [lastMonthDates, currentMonthDates, nextMonthDates]);
 
     useEffect(() => {
         if (activeGoal == null && goals && !goalError) {
@@ -47,7 +65,7 @@ export const GoalProvider = ({children}) => {
             goalIsLoading,
             activeGoal,
             setActiveGoal,
-            dates: dates?.data
+            dates
             }}>
             {children}
         </GoalContext.Provider>

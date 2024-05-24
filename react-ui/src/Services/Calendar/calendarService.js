@@ -87,3 +87,27 @@ export const getNewDateNoTime = (dateString = null) => {
     result.setHours(0, 0, 0, 0);
     return result;
 }
+
+export const getDateOnlyString = (date) => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+
+    const formattedDate = `${year}-${month}-${day}`;
+    return formattedDate;
+}
+
+export const compareDateOnly = (date1, date2) => {
+    date1 = getNewDateNoTime(date1);
+    date2 = getNewDateNoTime(date2);
+    return date1.getTime() === date2.getTime();
+}
+
+export const getStartAndEndDate = (date, daysNumber) => {
+    const startDate = getNewDateNoTime(date);
+    const goalEnd = getNewDateNoTime(date);
+    goalEnd.setDate(startDate.getDate() + daysNumber);
+    const now = getNewDateNoTime();
+    const endDate = now <= goalEnd ? now : goalEnd;
+    return {startDate, endDate}
+}
