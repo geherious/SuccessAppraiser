@@ -100,7 +100,15 @@ export const getDateOnlyString = (date) => {
 export const compareDateOnly = (date1, date2) => {
     date1 = getNewDateNoTime(date1);
     date2 = getNewDateNoTime(date2);
-    return date1.getTime() === date2.getTime();
+    if (date1.getTime() < date2.getTime()) {
+        return -1;
+    }
+    else if (date1.getTime() > date2.getTime()) {
+        return 1;
+    }
+    else{
+        return 0
+    }
 }
 
 export const getStartAndEndDate = (date, daysNumber) => {

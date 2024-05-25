@@ -2,11 +2,15 @@ import './Cell.css';
 import useGoal from "../../hooks/useGoal";
 import clsx from 'clsx';
 import { getStartAndEndDate } from '../../Services/Calendar/calendarService';
-import { useRef } from 'react';
+import { memo, useRef } from 'react';
+import useHomeStore from '../../Store/useHomeStore';
+import useDates from '../../hooks/useDates';
 
 
-const Cell = ({ date, dateShift, isDateWithState, cellNumber, setIsActive, setModalDate }) => {
-    const {activeGoal, dates} = useGoal();
+const Cell = ({ date, state, cellNumber }) => {
+    const activeGoal = useHomeStore(state => state.activeGoal);
+    const setModalIsActive = useHomeStore(state => state.setModalIsActive);
+    const setModalDate = useHomeStore(state => state.setModalDate);
 
     const weekDaysNames = ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'];
     const statelessColor = '#ADADAD';
@@ -18,7 +22,7 @@ const Cell = ({ date, dateShift, isDateWithState, cellNumber, setIsActive, setMo
                 className={'cell-status'}
                 onClick={() => {
                     if (!state){
-                        setIsActive(true);
+                        setModalIsActive(true);
                         setModalDate(date);
                     }
                 }}
@@ -29,11 +33,10 @@ const Cell = ({ date, dateShift, isDateWithState, cellNumber, setIsActive, setMo
 
     const createStatusSpan = () => {
         let statusEl = null;
-        if (activeGoal && dates) {
+        if (activeGoal) {
             const {startDate, endDate} = getStartAndEndDate(new Date(activeGoal.dateStart), activeGoal.daysNumber);
-            if (isDateWithState) {
-                let status = activeGoal.template.states.find(state => state.id === dates[dateShift].stateId)
-                statusEl = spanFactory(status)
+            if (state) {
+                statusEl = spanFactory(state)
             }
             else if (date.getTime() >= startDate.getTime() && date.getTime() <= endDate.getTime()) {
                 statusEl = spanFactory(null)
@@ -55,6 +58,6 @@ const Cell = ({ date, dateShift, isDateWithState, cellNumber, setIsActive, setMo
             {statusEl}
         </div>
     )
-}
+};
 
 export default Cell

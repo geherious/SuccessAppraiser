@@ -6,14 +6,21 @@ import LoaderDots from '../Loaders/LoaderDots';
 import useAxiosPrivate from '../../hooks/useAxiosPrivate';
 import { postGoalDate } from '../../api/goalApi';
 import { getDateOnlyString } from '../../Services/Calendar/calendarService';
+import useHomeStore from '../../Store/useHomeStore';
+import useDates from '../../hooks/useDates';
 
 
-const DateModal = ({isActive, setIsActive, date}) => {
+const DateModal = () => {
 
-  const {activeGoal} = useGoal();
+  const activeGoal = useHomeStore(state => state.activeGoal);
 
   const [status, setStatus] = useState('');
   const [comment, setComment] = useState('');
+
+  const isActive = useHomeStore(state => state.modalIsActive);
+  const setIsActive = useHomeStore(state => state.setModalIsActive);
+  const date = useHomeStore(state => state.modalDate);
+  // const { mutate } = useDates();
 
   const { isConfiguring, axiosPrivate } = useAxiosPrivate();
 
@@ -23,11 +30,12 @@ const DateModal = ({isActive, setIsActive, date}) => {
     }
   }, [activeGoal])
 
-  const submitForm = (e) => {
+  const submitForm = async (e) => {
     e.preventDefault();
     try{
-      const response = axiosPrivate.post(postGoalDate, JSON.stringify({
+      const response = await axiosPrivate.post(postGoalDate, JSON.stringify({
         date: getDateOnlyString(date), comment: comment, stateId: status, goalId: activeGoal.id}));
+      const newData = response.data
       setIsActive(false);
     } catch (err) {
       console.log(err);

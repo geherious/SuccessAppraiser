@@ -4,10 +4,14 @@ import useCalendar from '../../hooks/useCalendar';
 import { getLastMonthDates, compareDateOnly, getDatesInMonth, getNextMonthDates, getLastDayInMonth, getWeekDay } from '../../Services/Calendar/calendarService';
 import Cell from './Cell';
 import useGoal from '../../hooks/useGoal';
+import useHomeStore from '../../Store/useHomeStore';
+import useDates from '../../hooks/useDates';
+import { useCallback } from 'react';
 
-const CalendarBody = ({ setIsActive, setModalDate}) => {
-  const { currentDateArea } = useCalendar();
-  const { dates } = useGoal();
+const CalendarBody = () => {
+  const currentDateArea = useHomeStore(state => state.currentDateArea);
+  const { dates } = useDates();
+  const activeGoal = useHomeStore(state => state.activeGoal);
 
   const firstWeekDay = getWeekDay(currentDateArea, 1);
   const lastWeekDay = getWeekDay(getLastDayInMonth(currentDateArea), 1);
@@ -18,30 +22,35 @@ const CalendarBody = ({ setIsActive, setModalDate}) => {
 
   const cells = lastMonthDates.concat(currentMonthDates, nextMonthDates);
 
-  const isDateWithState = (date, dateShift) => {
-    if (dates && dates.length > 0 && dateShift < dates.length && compareDateOnly(date, dates[dateShift].date)) {
-      return true;
+  const findDateState = (date, dateShift) => {
+    if (dates && dates.length > 0 && dateShift.value < dates.length) {
+      while (dateShift.value < dates.length - 1 && compareDateOnly(dates[dateShift.value].date, date) < 0){
+        dateShift.value++;
+      }
+      if (compareDateOnly(date, dates[dateShift.value].date) === 0){
+        const result = activeGoal.template.states.find(state => state.id === dates[dateShift.value].stateId)
+        dateShift.value++;
+        return result
+      }
+      else{
+        return null;
+      }
     }
     else{
-      return false;
+      return null;
     }
   };
 
 
+
   const cellsElements = cells => {
     let content = [];
-    let dateShift = 0;
+    let dateShift = { value: 0};
     for (let i = 0; i < cells.length; i++) {
       const date = cells[i];
-      const isStateful = isDateWithState(date, dateShift);
-      if (dates){
-        console.log(date, isStateful, dateShift);
-      }
-      const item = <Cell key={date} date={date} dateShift={dateShift} isDateWithState={isStateful} cellNumber={i} setIsActive={setIsActive} setModalDate={setModalDate}/>;
+      const state = findDateState(date, dateShift);
+      const item = <Cell key={date} date={date} state={state} cellNumber={i}/>;
 
-      if (isStateful){
-        dateShift++;
-      }
 
       content.push(item);
     }

@@ -1,13 +1,17 @@
 import './SideBar.css';
 import plusImg from '../../../public/images/home/plus.png';
-import useGoal from '../../hooks/useGoal';
 import clsx from 'clsx';
 import LoaderDots from '../Loaders/LoaderDots';
+import useNewGoal from '../../hooks/useNewGoal';
+import useHomeStore from '../../Store/useHomeStore';
 
 
 const SideBar = () => {
 
-  const { goals, goalIsLoading, activeGoal, setActiveGoal } = useGoal();
+  const { goals, IsLoadingGoals } = useNewGoal();
+  const activeGoal = useHomeStore(state => state.activeGoal);
+  const setActiveGoal = useHomeStore(state => state.setActiveGoal);
+
   let content;
 
   if (goals){
@@ -23,7 +27,7 @@ const SideBar = () => {
         </ul>
     </>
   }
-  else if (goalIsLoading){
+  else if (IsLoadingGoals){
     content = <LoaderDots/>
   }
   else{

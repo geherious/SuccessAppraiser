@@ -1,10 +1,12 @@
 import useCalendar from "../../hooks/useCalendar";
 import './CalendarControl.css';
 import arrowImage from "../../../public/images/home/arrow-icon.png";
+import useHomeStore from "../../Store/useHomeStore";
 
 const CalendarControl = () => {
 
-  const {currentDateArea, setCurrentDateArea} = useCalendar();
+  const currentDateArea = useHomeStore(state => state.currentDateArea);
+  const setCurrentDateArea = useHomeStore(state => state.setCurrentDateArea);
 
   const shiftMonth = (value) => {
     setCurrentDateArea(new Date(currentDateArea.setMonth(currentDateArea.getMonth() + value)));
