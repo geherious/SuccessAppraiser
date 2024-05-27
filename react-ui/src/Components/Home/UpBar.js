@@ -9,9 +9,9 @@ const UpBar = () => {
         </span>
       </div>
       <div className='col p-0'>
-        <CalendarControl/>
+        <CalendarControl />
       </div>
-  </div>
+    </div>
   )
 }
 

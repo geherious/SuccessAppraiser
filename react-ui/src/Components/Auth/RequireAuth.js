@@ -4,13 +4,13 @@ import useRefreshToken from "../../hooks/useRefreshToken";
 
 
 const RequireAuth = () => {
-  const {auth} = useAuth();
+  const { auth } = useAuth();
 
 
   return (
-      auth?.accessToken ?
-      <Outlet/> :
-        <Navigate to='/login' replace/>
+    auth?.accessToken ?
+      <Outlet /> :
+      <Navigate to='/login' replace />
   )
 }
 

@@ -4,15 +4,15 @@ import useAuth from "../../hooks/useAuth"
 
 const Header = () => {
 
-    const {auth} = useAuth();
+  const { auth } = useAuth();
 
   return (
     <>
-    <div>
+      <div>
         {auth.username ? auth.username : <Link to="/login">Login</Link>}
         <Link to="/policy">Policy</Link>
 
-    </div>
+      </div>
     </>
   )
 }

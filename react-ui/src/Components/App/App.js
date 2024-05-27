@@ -14,22 +14,22 @@ import Missing from '../Missing/Missing';
 function App() {
   return (
     <Routes>
-      <Route path='/' element={<MainLayout/>}>
-      <Route element={<PersistLogin/>}>
-        {/* public routes */}
-        <Route path='login' element={<Login/>}/>
-        <Route path='register' element={<Register/>}/>
-        <Route path='/' element={<Welcome/>}/>
-        <Route path='/policy' element={<Policy/>}/>
+      <Route path='/' element={<MainLayout />}>
+        <Route element={<PersistLogin />}>
+          {/* public routes */}
+          <Route path='login' element={<Login />} />
+          <Route path='register' element={<Register />} />
+          <Route path='/' element={<Welcome />} />
+          <Route path='/policy' element={<Policy />} />
 
-        {/* private routes */}
-        <Route element={<RequireAuth/>}>
-          <Route path="home" element={<Home/>} />
+          {/* private routes */}
+          <Route element={<RequireAuth />}>
+            <Route path="home" element={<Home />} />
+          </Route>
         </Route>
       </Route>
-      </Route>
 
-      <Route path='*' element={<Missing/>} />
+      <Route path='*' element={<Missing />} />
     </Routes>
   );
 }

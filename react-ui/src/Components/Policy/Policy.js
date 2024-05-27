@@ -4,8 +4,8 @@ import { Link } from 'react-router-dom'
 const Policy = () => {
   return (
     <>
-    <div>Policy</div>
-    <Link to="/home">Home</Link>
+      <div>Policy</div>
+      <Link to="/home">Home</Link>
     </>
   )
 }

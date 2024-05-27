@@ -1,7 +1,7 @@
 import './CalendarBody.css';
 import clsx from 'clsx';
 import useCalendar from '../../hooks/useCalendar';
-import { getLastMonthDates, compareDateOnly, getDatesInMonth, getNextMonthDates, getLastDayInMonth, getWeekDay } from '../../Services/Calendar/calendarService';
+import { getLastMonthDates, compareDateOnly, getDatesInMonth, getNextMonthDates, getLastDayInMonth, getWeekDay, getStartAndEndDate } from '../../Services/Calendar/calendarService';
 import Cell from './Cell';
 import useGoal from '../../hooks/useGoal';
 import useHomeStore from '../../Store/useHomeStore';
@@ -23,33 +23,56 @@ const CalendarBody = () => {
   const cells = lastMonthDates.concat(currentMonthDates, nextMonthDates);
 
   const findDateState = (date, dateShift) => {
-    if (dates && dates.length > 0 && dateShift.value < dates.length) {
-      while (dateShift.value < dates.length - 1 && compareDateOnly(dates[dateShift.value].date, date) < 0){
-        dateShift.value++;
-      }
-      if (compareDateOnly(date, dates[dateShift.value].date) === 0){
-        const result = activeGoal.template.states.find(state => state.id === dates[dateShift.value].stateId)
-        dateShift.value++;
-        return result
-      }
-      else{
-        return null;
-      }
+    const result = {
+      type: null,
+      state: null
     }
-    else{
-      return null;
+
+    let isInRange = false;
+
+    if (!activeGoal || !dates) {
+      return result;
     }
+
+    const { startDate, endDate } = getStartAndEndDate(new Date(activeGoal.dateStart), activeGoal.daysNumber);
+
+    if (date.getTime() >= startDate.getTime() && date.getTime() <= endDate.getTime()) {
+      isInRange = true;
+    }
+
+    if (!isInRange) {
+      return result;
+    }
+
+    if (isInRange && (dates.length < 0 || dateShift.value >= dates.length)) {
+      result.type = 'stateless';
+      return result;
+    }
+
+    while (dateShift.value < dates.length - 1 && compareDateOnly(dates[dateShift.value].date, date) < 0) {
+      dateShift.value++;
+    }
+    if (compareDateOnly(date, dates[dateShift.value].date) === 0) {
+      const state = activeGoal.template.states.find(state => state.id === dates[dateShift.value].stateId)
+      result.type = 'stateful';
+      result.state = state;
+    }
+    else {
+      result.type = 'stateless';
+    }
+
+    return result;
   };
 
 
 
   const cellsElements = cells => {
     let content = [];
-    let dateShift = { value: 0};
+    let dateShift = { value: 0 };
     for (let i = 0; i < cells.length; i++) {
       const date = cells[i];
-      const state = findDateState(date, dateShift);
-      const item = <Cell key={date} date={date} state={state} cellNumber={i}/>;
+      const dateState = findDateState(date, dateShift);
+      const item = <Cell key={date} date={date} dateState={dateState} cellNumber={i} />;
 
 
       content.push(item);

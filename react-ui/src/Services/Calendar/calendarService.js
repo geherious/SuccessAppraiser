@@ -6,14 +6,14 @@
  * @return {Array<Date>} An array of the last month's dates.
  */
 export const getLastMonthDates = (date, number) => {
-    const month = date.getMonth();
-    const year = date.getFullYear();
-    const lastDay = new Date(year, month, 0);
-    let days = [];
-    for (let i = number - 1; i >= 0; i--) {
-        days.push(new Date(lastDay.getTime() - i * 24 * 60 * 60 * 1000));
-    }
-    return days;
+  const month = date.getMonth();
+  const year = date.getFullYear();
+  const lastDay = new Date(year, month, 0);
+  let days = [];
+  for (let i = number - 1; i >= 0; i--) {
+    days.push(new Date(lastDay.getTime() - i * 24 * 60 * 60 * 1000));
+  }
+  return days;
 }
 
 /**
@@ -23,14 +23,14 @@ export const getLastMonthDates = (date, number) => {
  * @return {Array<Date>} An array of dates for the given month and year.
  */
 export const getDatesInMonth = (date) => {
-    const month = date.getMonth();
-    const year = date.getFullYear();
-    const lastDay = new Date(year, month + 1, 0);
-    let days = [];
-    for (let i = 1; i <= lastDay.getDate(); i++) {
-        days.push(new Date(year, month, i));
-    }
-    return days
+  const month = date.getMonth();
+  const year = date.getFullYear();
+  const lastDay = new Date(year, month + 1, 0);
+  let days = [];
+  for (let i = 1; i <= lastDay.getDate(); i++) {
+    days.push(new Date(year, month, i));
+  }
+  return days
 }
 
 /**
@@ -41,14 +41,14 @@ export const getDatesInMonth = (date) => {
  * @return {Array<Date>} an array of dates for the next 'number' days
  */
 export const getNextMonthDates = (date, number) => {
-    const month = date.getMonth();
-    const year = date.getFullYear();
-    const lastDay = new Date(year, month + 1, 0);
-    let days = [];
-    for (let i = 1; i <= number; i++) {
-        days.push(new Date(lastDay.getTime() + i * 24 * 60 * 60 * 1000));
-    }
-    return days;
+  const month = date.getMonth();
+  const year = date.getFullYear();
+  const lastDay = new Date(year, month + 1, 0);
+  let days = [];
+  for (let i = 1; i <= number; i++) {
+    days.push(new Date(lastDay.getTime() + i * 24 * 60 * 60 * 1000));
+  }
+  return days;
 }
 
 /**
@@ -58,10 +58,10 @@ export const getNextMonthDates = (date, number) => {
  * @return {Date} the last day of the month
  */
 export const getLastDayInMonth = (date) => {
-    const month = date.getMonth();
-    const year = date.getFullYear();
-    const lastDay = new Date(year, month + 1, 0);
-    return lastDay
+  const month = date.getMonth();
+  const year = date.getFullYear();
+  const lastDay = new Date(year, month + 1, 0);
+  return lastDay
 }
 
 /**
@@ -72,50 +72,50 @@ export const getLastDayInMonth = (date) => {
  * @return {number} The calculated weekday.
  */
 export const getWeekDay = (date, shift = 0) => {
-    const day = date.getDay();
-    return (day + 7 - shift) % 7
+  const day = date.getDay();
+  return (day + 7 - shift) % 7
 }
 
 export const getNewDateNoTime = (dateString = null) => {
-    let result;
-    if (dateString){
-        result = new Date(dateString);
-    }
-    else {
-        result = new Date();
-    }
-    result.setHours(0, 0, 0, 0);
-    return result;
+  let result;
+  if (dateString) {
+    result = new Date(dateString);
+  }
+  else {
+    result = new Date();
+  }
+  result.setHours(0, 0, 0, 0);
+  return result;
 }
 
 export const getDateOnlyString = (date) => {
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
 
-    const formattedDate = `${year}-${month}-${day}`;
-    return formattedDate;
+  const formattedDate = `${year}-${month}-${day}`;
+  return formattedDate;
 }
 
 export const compareDateOnly = (date1, date2) => {
-    date1 = getNewDateNoTime(date1);
-    date2 = getNewDateNoTime(date2);
-    if (date1.getTime() < date2.getTime()) {
-        return -1;
-    }
-    else if (date1.getTime() > date2.getTime()) {
-        return 1;
-    }
-    else{
-        return 0
-    }
+  date1 = getNewDateNoTime(date1);
+  date2 = getNewDateNoTime(date2);
+  if (date1.getTime() < date2.getTime()) {
+    return -1;
+  }
+  else if (date1.getTime() > date2.getTime()) {
+    return 1;
+  }
+  else {
+    return 0
+  }
 }
 
 export const getStartAndEndDate = (date, daysNumber) => {
-    const startDate = getNewDateNoTime(date);
-    const goalEnd = getNewDateNoTime(date);
-    goalEnd.setDate(startDate.getDate() + daysNumber);
-    const now = getNewDateNoTime();
-    const endDate = now <= goalEnd ? now : goalEnd;
-    return {startDate, endDate}
+  const startDate = getNewDateNoTime(date);
+  const goalEnd = getNewDateNoTime(date);
+  goalEnd.setDate(startDate.getDate() + daysNumber);
+  const now = getNewDateNoTime();
+  const endDate = now <= goalEnd ? now : goalEnd;
+  return { startDate, endDate }
 }

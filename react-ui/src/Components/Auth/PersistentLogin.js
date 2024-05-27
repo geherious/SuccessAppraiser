@@ -5,41 +5,41 @@ import useRefreshToken from "../../hooks/useRefreshToken";
 import LoaderCircle from "../Loaders/LoaderCircle";
 
 const PersistLogin = () => {
-    const [isLoading, setIsLoading] = useState(true);
-    const refresh = useRefreshToken();
-    const { auth, persist } = useAuth();
-    const controller = new AbortController();
+  const [isLoading, setIsLoading] = useState(true);
+  const refresh = useRefreshToken();
+  const { auth, persist } = useAuth();
+  const controller = new AbortController();
 
-    useEffect(() => {
-        let isMounted = true;
+  useEffect(() => {
+    let isMounted = true;
 
-        const verifyRefreshToken = async () => {
-            try {
-                await refresh(controller.signal);
-            }
-            finally {
-                isMounted && setIsLoading(false);
-            }
-        }
+    const verifyRefreshToken = async () => {
+      try {
+        await refresh(controller.signal);
+      }
+      finally {
+        isMounted && setIsLoading(false);
+      }
+    }
 
-        !auth?.accessToken && persist ? verifyRefreshToken() : setIsLoading(false);
+    !auth?.accessToken && persist ? verifyRefreshToken() : setIsLoading(false);
 
-        return () => {
-            isMounted = false;
-            controller.abort();
-        };
-    }, [])
+    return () => {
+      isMounted = false;
+      controller.abort();
+    };
+  }, [])
 
-    return (
-        <>
-            {!persist
-                ? <Outlet />
-                : isLoading
-                    ? <LoaderCircle/>
-                    : <Outlet />
-            }
-        </>
-    )
+  return (
+    <>
+      {!persist
+        ? <Outlet />
+        : isLoading
+          ? <LoaderCircle />
+          : <Outlet />
+      }
+    </>
+  )
 }
 
 export default PersistLogin

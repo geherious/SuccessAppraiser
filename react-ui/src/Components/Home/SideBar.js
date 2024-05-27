@@ -14,28 +14,28 @@ const SideBar = () => {
 
   let content;
 
-  if (goals){
-    content = 
-    <>
+  if (goals) {
+    content =
+      <>
         <button type='button' className='add-button'>
-        <img src={plusImg} alt='Add' className='add-icon'/>
+          <img src={plusImg} alt='Add' className='add-icon' />
         </button>
         <ul className='goal-list'>
           {goals.map(goal =>
-          <li key={goal.id} onClick={() => setActiveGoal(goal)} className={clsx(goal === activeGoal && 'active-goal')}>{goal.name}</li>
+            <li key={goal.id} onClick={() => setActiveGoal(goal)} className={clsx(goal === activeGoal && 'active-goal')}>{goal.name}</li>
           )}
         </ul>
-    </>
+      </>
   }
-  else if (IsLoadingGoals){
-    content = <LoaderDots/>
+  else if (IsLoadingGoals) {
+    content = <LoaderDots />
   }
-  else{
+  else {
     content = <p>Error</p>
   }
   return (
     <div className='side-bar'>
-        {content}
+      {content}
     </div>
   )
 }
