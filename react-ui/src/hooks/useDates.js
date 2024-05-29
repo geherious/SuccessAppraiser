@@ -25,13 +25,13 @@ const useDates = () => {
   const shouldFetch = !isConfiguring && activeGoal;
   const fetchSettings = { revalidateOnFocus: false, revalidateIfStale: false };
 
-  const { data: lastMonthDates, mutate: mutateLastMonth } = useSWR(shouldFetch ? getKeyWithArgs(lastMonth) : null,
+  const { data: lastMonthDates, mutate: mutateLastMonth, isLoading: lastMonthIsLoading } = useSWR(shouldFetch ? getKeyWithArgs(lastMonth) : null,
     (args) => axiosPrivate.get(getGoalDateByMonth, { params: getParams(args.year, args.month) }), fetchSettings);
 
-  const { data: currentMonthDates, mutate: mutateCurrentMonth } = useSWR(shouldFetch ? getKeyWithArgs(currentDateArea) : null,
+  const { data: currentMonthDates, mutate: mutateCurrentMonth, isLoading: currentMonthIsLoading } = useSWR(shouldFetch ? getKeyWithArgs(currentDateArea) : null,
     (args) => axiosPrivate.get(getGoalDateByMonth, { params: getParams(args.year, args.month) }), fetchSettings);
 
-  const { data: nextMonthDates, mutate: mutateNextMonth } = useSWR(shouldFetch ? getKeyWithArgs(nextMonth) : null,
+  const { data: nextMonthDates, mutate: mutateNextMonth, isLoading: nextMonthIsLoading } = useSWR(shouldFetch ? getKeyWithArgs(nextMonth) : null,
     (args) => axiosPrivate.get(getGoalDateByMonth, { params: getParams(args.year, args.month) }), fetchSettings);
 
   const dates = useMemo(() => {
@@ -65,7 +65,8 @@ const useDates = () => {
   // }, [activeGoal, lastMonthDates, currentMonthDates, nextMonthDates]);
 
   return {
-    dates
+    dates,
+    isLoading: lastMonthIsLoading || currentMonthIsLoading || nextMonthIsLoading,
   }
 };
 

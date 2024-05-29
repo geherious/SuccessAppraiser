@@ -1,21 +1,21 @@
 .calendar-body {
-    font-size: .7rem; 
-    display: grid;
-    gap: 0px;
-    padding: 0px;
-    height: 100%;
-    width: 100%;
-    min-height: 180px;
-    min-width: 300px;
+  font-size: .7rem;
+  display: grid;
+  gap: 0px;
+  padding: 0px;
+  height: 100%;
+  width: 100%;
+  min-height: 180px;
+  min-width: 300px;
 
 }
 
 .grid-35 {
-    grid-template-columns: repeat(7, 1fr);
-    grid-template-rows: repeat(5, 1fr);
+  grid-template-columns: repeat(7, 1fr);
+  grid-template-rows: repeat(5, 1fr);
 }
 
 .grid-42 {
-    grid-template-columns: repeat(7, 1fr);
-    grid-template-rows: repeat(6, 1fr);
+  grid-template-columns: repeat(7, 1fr);
+  grid-template-rows: repeat(6, 1fr);
 }

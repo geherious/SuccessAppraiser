@@ -3,10 +3,8 @@ import clsx from 'clsx';
 import useCalendar from '../../hooks/useCalendar';
 import { getLastMonthDates, compareDateOnly, getDatesInMonth, getNextMonthDates, getLastDayInMonth, getWeekDay, getStartAndEndDate } from '../../Services/Calendar/calendarService';
 import Cell from './Cell';
-import useGoal from '../../hooks/useGoal';
 import useHomeStore from '../../Store/useHomeStore';
 import useDates from '../../hooks/useDates';
-import { useCallback } from 'react';
 
 const CalendarBody = () => {
   const currentDateArea = useHomeStore(state => state.currentDateArea);

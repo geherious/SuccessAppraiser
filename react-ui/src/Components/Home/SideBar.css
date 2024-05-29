@@ -7,10 +7,10 @@
 
     --shadow-color: #c7c6c6;
     box-shadow: 
-    2px 0 0 0 var(--shadow-color), 
-    0 2px 0 0 var(--shadow-color), 
-    2px 2px 0 0 var(--shadow-color),
-    0 2px 0 0 var(--shadow-color) inset;
+    -2px 0 0 0 var(--shadow-color) inset,
+    0 -1px 0 0 var(--shadow-color),
+    0 1px 0 0 var(--shadow-color) inset;
+
 }
 
 .add-button {
