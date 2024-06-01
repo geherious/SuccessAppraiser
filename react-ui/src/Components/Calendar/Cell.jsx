@@ -1,10 +1,5 @@
-import './Cell.css';
-import useGoal from "../../hooks/useGoal";
-import clsx from 'clsx';
-import { getStartAndEndDate } from '../../Services/Calendar/calendarService';
-import { memo, useRef } from 'react';
 import useHomeStore from '../../Store/useHomeStore';
-import useDates from '../../hooks/useDates';
+import './Cell.css';
 
 
 const Cell = ({ date, dateState, cellNumber }) => {

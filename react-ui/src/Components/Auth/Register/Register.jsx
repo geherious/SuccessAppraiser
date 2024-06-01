@@ -1,7 +1,4 @@
 import './Register.css'
-
-import { faInfoCircle, faCheck, faTimes } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useState, useEffect, useRef } from "react";
 import { instance } from '../../../api/axios';
 
@@ -109,8 +106,6 @@ const Register = () => {
             <div className="form-group">
               <label className="form-label" htmlFor="email">
                 Email:&nbsp;
-                <FontAwesomeIcon icon={faCheck} className={validEmail ? "valid" : "hide"} />
-                <FontAwesomeIcon icon={faTimes} className={!validEmail || !email ? "invalid" : "hide"} />
               </label>
               <input
                 type="text"
@@ -123,15 +118,12 @@ const Register = () => {
                 onBlur={() => setEmailFocus(false)}
               />
               <p className={emailFocus && email && !validEmail ? "form-text text-muted" : "hide"}>
-                <FontAwesomeIcon className="pe-1" icon={faInfoCircle} />
                 Should be valid email. <br />
               </p>
             </div>
             <div className="form-group">
               <label className="form-label" htmlFor="username">
                 Username:&nbsp;
-                <FontAwesomeIcon icon={faCheck} className={validName ? "valid" : "hide"} />
-                <FontAwesomeIcon icon={faTimes} className={!validName || !user ? "invalid" : "hide"} />
               </label>
               <input
                 type="text"
@@ -145,7 +137,6 @@ const Register = () => {
                 onBlur={() => setUserFocus(false)}
               />
               <p className={userFocus && user && !validName ? "form-text text-muted" : "hide"}>
-                <FontAwesomeIcon className="pe-1" icon={faInfoCircle} />
                 3 to 25 characters. <br />
                 Must begin with a letter <br />
               </p>
@@ -153,8 +144,6 @@ const Register = () => {
             <div className="form-group">
               <label htmlFor="password">
                 Password:&nbsp;
-                <FontAwesomeIcon icon={faCheck} className={validPwd ? "valid" : "hide"} />
-                <FontAwesomeIcon icon={faTimes} className={!validPwd || !pwd ? "invalid" : "hide"} />
               </label>
               <input
                 type="password"
@@ -167,7 +156,6 @@ const Register = () => {
                 onBlur={() => setPwdFocus(false)}
               />
               <p className={pwdFocus && !validPwd ? "form-text text-muted" : "hide"}>
-                <FontAwesomeIcon className="pe-1" icon={faInfoCircle} />
                 Must be at least 6 characters.<br />
                 Must include letters and numbers.<br />
               </p>
@@ -175,8 +163,6 @@ const Register = () => {
             <div className="form-group">
               <label htmlFor="confirm_pwd">
                 Confirm Password:&nbsp;
-                <FontAwesomeIcon icon={faCheck} className={validMatch && matchPwd ? "valid" : "hide"} />
-                <FontAwesomeIcon icon={faTimes} className={!validMatch || !matchPwd ? "invalid" : "hide"} />
               </label>
               <input
                 type="password"
@@ -189,7 +175,7 @@ const Register = () => {
                 onBlur={() => setMatchFocus(false)}
               />
               <p className={matchFocus && !validMatch ? "instructions" : "hide"}>
-                <FontAwesomeIcon className="pe-1" icon={faInfoCircle} />
+
                 Must match the first password input field.
               </p>
             </div>

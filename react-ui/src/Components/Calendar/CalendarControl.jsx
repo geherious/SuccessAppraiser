@@ -1,7 +1,6 @@
-import useCalendar from "../../hooks/useCalendar";
-import './CalendarControl.css';
-import arrowImage from "../../../public/images/home/arrow-icon.png";
+import arrowImage from "../../assets/images/home/arrow-icon.png";
 import useHomeStore from "../../Store/useHomeStore";
+import './CalendarControl.css';
 
 const CalendarControl = () => {
 

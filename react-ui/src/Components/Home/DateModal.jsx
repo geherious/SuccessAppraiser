@@ -1,13 +1,11 @@
-import ModalBase from '../ModalBase/ModalBase';
-import './DateModal.css';
-import useGoal from "../../hooks/useGoal";
 import { useEffect, useState } from 'react';
-import LoaderDots from '../Loaders/LoaderDots';
-import useAxiosPrivate from '../../hooks/useAxiosPrivate';
-import { postGoalDate } from '../../api/goalApi';
 import { getDateOnlyString } from '../../Services/Calendar/calendarService';
 import useHomeStore from '../../Store/useHomeStore';
-import useDates from '../../hooks/useDates';
+import { postGoalDate } from '../../api/goalApi';
+import useAxiosPrivate from '../../hooks/useAxiosPrivate';
+import LoaderDots from '../Loaders/LoaderDots';
+import ModalBase from '../ModalBase/ModalBase';
+import './DateModal.css';
 
 
 const DateModal = () => {

@@ -1,12 +1,8 @@
+import CalendarBody from '../Calendar/CalendarBody';
+import DateModal from './DateModal';
 import './Home.css';
 import SideBar from "./SideBar";
-import { GoalProvider } from '../../Context/GoalProvide';
 import UpBar from './UpBar';
-import CalendarBody from '../Calendar/CalendarBody';
-import { CalendarProvider } from '../../Context/CalendarProvide';
-import { useRef, useState } from 'react';
-import DateModal from './DateModal';
-import useHomeStore from '../../Store/useHomeStore';
 
 
 const Home = () => {

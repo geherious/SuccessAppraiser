@@ -1,10 +1,9 @@
-import './CalendarBody.css';
 import clsx from 'clsx';
-import useCalendar from '../../hooks/useCalendar';
-import { getLastMonthDates, compareDateOnly, getDatesInMonth, getNextMonthDates, getLastDayInMonth, getWeekDay, getStartAndEndDate } from '../../Services/Calendar/calendarService';
-import Cell from './Cell';
+import { compareDateOnly, getDatesInMonth, getLastDayInMonth, getLastMonthDates, getNextMonthDates, getStartAndEndDate, getWeekDay } from '../../Services/Calendar/calendarService';
 import useHomeStore from '../../Store/useHomeStore';
 import useDates from '../../hooks/useDates';
+import './CalendarBody.css';
+import Cell from './Cell';
 
 const CalendarBody = () => {
   const currentDateArea = useHomeStore(state => state.currentDateArea);

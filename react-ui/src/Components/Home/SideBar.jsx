@@ -1,5 +1,5 @@
 import './SideBar.css';
-import plusImg from '../../../public/images/home/plus.png';
+import plusImg from '../../assets/images/home/plus-icon.png';
 import clsx from 'clsx';
 import LoaderDots from '../Loaders/LoaderDots';
 import useNewGoal from '../../hooks/useNewGoal';
