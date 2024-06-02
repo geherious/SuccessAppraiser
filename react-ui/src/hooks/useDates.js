@@ -3,6 +3,7 @@ import useHomeStore from "../Store/useHomeStore";
 import { getGoalDateByMonth } from "../api/goalApi";
 import useAxiosPrivate from "./useAxiosPrivate";
 import { useCallback, useMemo } from "react";
+import { compareDateOnly } from "../Services/Calendar/calendarService";
 
 const useDates = () => {
   const { isConfiguring, axiosPrivate } = useAxiosPrivate();
@@ -26,20 +27,20 @@ const useDates = () => {
   const fetchSettings = { revalidateOnFocus: false, revalidateIfStale: false };
 
   const { data: lastMonthDates, mutate: mutateLastMonth, isLoading: lastMonthIsLoading } = useSWR(shouldFetch ? getKeyWithArgs(lastMonth) : null,
-    (args) => axiosPrivate.get(getGoalDateByMonth, { params: getParams(args.year, args.month) }), fetchSettings);
+    (args) => axiosPrivate.get(getGoalDateByMonth, { params: getParams(args.year, args.month) }).then(res => res.data), fetchSettings);
 
   const { data: currentMonthDates, mutate: mutateCurrentMonth, isLoading: currentMonthIsLoading } = useSWR(shouldFetch ? getKeyWithArgs(currentDateArea) : null,
-    (args) => axiosPrivate.get(getGoalDateByMonth, { params: getParams(args.year, args.month) }), fetchSettings);
+    (args) => axiosPrivate.get(getGoalDateByMonth, { params: getParams(args.year, args.month) }).then(res => res.data), fetchSettings);
 
   const { data: nextMonthDates, mutate: mutateNextMonth, isLoading: nextMonthIsLoading } = useSWR(shouldFetch ? getKeyWithArgs(nextMonth) : null,
-    (args) => axiosPrivate.get(getGoalDateByMonth, { params: getParams(args.year, args.month) }), fetchSettings);
+    (args) => axiosPrivate.get(getGoalDateByMonth, { params: getParams(args.year, args.month) }).then(res => res.data), fetchSettings);
 
   const dates = useMemo(() => {
     if (lastMonthDates && currentMonthDates && nextMonthDates) {
       return [
-        ...lastMonthDates.data,
-        ...currentMonthDates.data,
-        ...nextMonthDates.data
+        ...lastMonthDates,
+        ...currentMonthDates,
+        ...nextMonthDates
       ]
     }
     else {
@@ -47,26 +48,38 @@ const useDates = () => {
     }
   }, [lastMonthDates, currentMonthDates, nextMonthDates]);
 
-  //     const mutate = useCallback((date, newObject) => {
-  //         const monthDiff = date.getMonth() - currentDateArea.getMonth();
-  //         switch (monthDiff) {
-  //             case 0:
-  //                 mutateCurrentMonth(newObject);
-  //                 break;
-  //             case -1:
-  //                 mutateLastMonth(newObject);
-  //                 break;
-  //             case 1:
-  //                 mutateNextMonth(newObject);
-  //                 break;
-  //             default:
-  //                 throw new Error('Invalid month difference in dates mutation');
-  //         }
-  // }, [activeGoal, lastMonthDates, currentMonthDates, nextMonthDates]);
+  function insertNewDate(array, newDate) {
+    console.log(array)
+    let index = array.findIndex(element => compareDateOnly(element.date, newDate) > 0);
+    if (index === -1) {
+      array.push(newDate);
+    } else {
+      array.splice(index, 0, newDate);
+    }
+    return array;
+  }
+
+  const mutate = useCallback((date, newDate) => {
+    const monthDiff = date.getMonth() - currentDateArea.getMonth();
+    switch (monthDiff) {
+      case 0:
+        mutateCurrentMonth(insertNewDate(currentMonthDates, newDate));
+        break;
+      case -1:
+        mutateLastMonth(insertNewDate(lastMonthDates, newDate));
+        break;
+      case 1:
+        mutateNextMonth(insertNewDate(nextMonthDates, newDate));
+        break;
+      default:
+        throw new Error('Invalid month difference in dates mutation');
+    }
+  }, [activeGoal, lastMonthDates, currentMonthDates, nextMonthDates]);
 
   return {
     dates,
     isLoading: lastMonthIsLoading || currentMonthIsLoading || nextMonthIsLoading,
+    mutate
   }
 };
 

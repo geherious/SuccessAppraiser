@@ -6,6 +6,9 @@ import useAxiosPrivate from '../../hooks/useAxiosPrivate';
 import LoaderDots from '../Loaders/LoaderDots';
 import ModalBase from '../ModalBase/ModalBase';
 import './DateModal.css';
+import useDates from '../../hooks/useDates';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 
 const DateModal = () => {
@@ -16,7 +19,7 @@ const DateModal = () => {
   const isActive = useHomeStore(state => state.modalIsActive);
   const setIsActive = useHomeStore(state => state.setModalIsActive);
   const date = useHomeStore(state => state.modalDate);
-  // const { mutate } = useDates();
+  const { mutate } = useDates();
 
   const { isConfiguring, axiosPrivate } = useAxiosPrivate();
 
@@ -28,14 +31,17 @@ const DateModal = () => {
 
   const submitForm = async (e) => {
     e.preventDefault();
+    const newData = { date: getDateOnlyString(date), comment: comment, stateId: status, goalId: activeGoal.id }
     try {
-      const response = await axiosPrivate.post(postGoalDate, JSON.stringify({
-        date: getDateOnlyString(date), comment: comment, stateId: status, goalId: activeGoal.id
-      }));
-      const newData = response.data
+      await axiosPrivate.post(postGoalDate, JSON.stringify(newData));
+      delete newData.goalId;
+      mutate(date, newData);
       setIsActive(false);
-    } catch (err) {
-      console.log(err);
+    } catch (error) {
+      console.log(error);
+      setIsActive(false);
+      toast.error('Something went wrong');
+
     }
   }
 
