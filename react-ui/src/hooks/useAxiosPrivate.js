@@ -1,4 +1,4 @@
-import { axiosPrivate } from "../api/axios";
+import { axiosPrivateInstance } from "../api/axios";
 import { useEffect, useState } from "react";
 import useRefreshToken from "./useRefreshToken";
 import useAuth from "./useAuth";
@@ -11,14 +11,14 @@ const useAxiosPrivate = () => {
 
   useEffect(() => {
     setIsConfiguring(true);
-    const requestIntercept = axiosPrivate.interceptors.request.use(
+    const requestIntercept = axiosPrivateInstance.interceptors.request.use(
       config => {
         config.headers['Authorization'] = `Bearer ${auth?.accessToken}`;
         return config;
       }, (error) => Promise.reject(error)
     );
 
-    const responseIntercept = axiosPrivate.interceptors.response.use(
+    const responseIntercept = axiosPrivateInstance.interceptors.response.use(
       response => response,
       async (error) => {
         let config = error?.config;
@@ -26,7 +26,7 @@ const useAxiosPrivate = () => {
           config.sent = true;
           let newAccessToken = refresh(controller.signal);
           config.headers['Authorization'] = `Bearer ${newAccessToken}`;
-          return axiosPrivate(config);
+          return axiosPrivateInstance(config);
         }
         return Promise.reject(error);
       }
@@ -35,13 +35,14 @@ const useAxiosPrivate = () => {
     setIsConfiguring(false);
 
     return () => {
-      axiosPrivate.interceptors.request.eject(requestIntercept);
-      axiosPrivate.interceptors.response.eject(responseIntercept);
+      axiosPrivateInstance.interceptors.request.eject(requestIntercept);
+      axiosPrivateInstance.interceptors.response.eject(responseIntercept);
+      setIsConfiguring(false);
       controller.abort();
     }
   }, [auth])
 
-  return { axiosPrivate, isConfiguring };
+  return { axiosPrivate: axiosPrivateInstance, isConfiguring };
 }
 
 export default useAxiosPrivate;

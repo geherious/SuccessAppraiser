@@ -5,7 +5,7 @@ export const instance = axios.create({
   withCredentials: true
 });
 
-export const axiosPrivate = axios.create({
+export const axiosPrivateInstance = axios.create({
   baseURL: 'https://localhost:7127',
   headers: { 'Content-Type': 'application/json' },
   withCredentials: true

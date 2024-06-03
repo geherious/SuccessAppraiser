@@ -59,7 +59,7 @@ namespace SuccessAppraiser.BLL.Auth.Services
                 return;
             }
 
-            _dbContext.RefreshTokens.Remove(tokenToDelete);
+            await RemoveRefreshTokenAsync(tokenToDelete, ct);
         }
 
         public async Task RemoveRefreshTokenAsync(RefreshToken token, CancellationToken ct = default)

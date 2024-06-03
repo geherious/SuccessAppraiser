@@ -1,40 +1,17 @@
 import { Outlet } from "react-router-dom";
-import { useState, useEffect } from "react";
-import useAuth from '../../hooks/useAuth';
 import useRefreshToken from "../../hooks/useRefreshToken";
 import LoaderCircle from "../Loaders/LoaderCircle";
+import useAuthStore from "../../Store/useAuthStore";
 
 const PersistLogin = () => {
-  const [isLoading, setIsLoading] = useState(true);
-  const refresh = useRefreshToken();
-  const { auth, persist } = useAuth();
-  const controller = new AbortController();
-
-  useEffect(() => {
-    let isMounted = true;
-
-    const verifyRefreshToken = async () => {
-      try {
-        await refresh(controller.signal);
-      }
-      finally {
-        isMounted && setIsLoading(false);
-      }
-    }
-
-    !auth?.accessToken && persist ? verifyRefreshToken() : setIsLoading(false);
-
-    return () => {
-      isMounted = false;
-      controller.abort();
-    };
-  }, [])
+  const { tokenIsLoading, abortToken } = useRefreshToken();
+  const persist = useAuthStore(state => state.persist);
 
   return (
     <>
       {!persist
         ? <Outlet />
-        : isLoading
+        : tokenIsLoading
           ? <LoaderCircle />
           : <Outlet />
       }

@@ -4,11 +4,14 @@ import { instance } from '../../../api/axios';
 import { useRef, useState, useEffect } from "react"
 import useAuth from '../../../hooks/useAuth';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
+import useAuthStore from '../../../Store/useAuthStore';
 
 const LOGIN_URL = '/auth/login';
 
 const Login = () => {
-  const { setAuth, persist, setPersist } = useAuth();
+  const setAuth = useAuthStore(state => state.setAuth);
+  const persist = useAuthStore(state => state.persist);
+  const setPersist = useAuthStore(state => state.setPersist);
 
   const navigate = useNavigate();
   const location = useLocation();
