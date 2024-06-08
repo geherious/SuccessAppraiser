@@ -2,13 +2,13 @@ import { useEffect, useState } from 'react';
 import { getDateOnlyString } from '../../Services/Calendar/calendarService';
 import useHomeStore from '../../Store/useHomeStore';
 import { postGoalDate } from '../../api/goalApi';
-import useAxiosPrivate from '../../hooks/useAxiosPrivate';
 import LoaderDots from '../Loaders/LoaderDots';
 import ModalBase from '../ModalBase/ModalBase';
 import './DateModal.css';
 import useDates from '../../hooks/useDates';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import useAxiosPrivate from '../../hooks/useAxiosPrivate';
 
 
 const DateModal = () => {
@@ -21,7 +21,7 @@ const DateModal = () => {
   const date = useHomeStore(state => state.modalDate);
   const { mutate } = useDates();
 
-  const { isConfiguring, axiosPrivate } = useAxiosPrivate();
+  const axiosPrivate = useAxiosPrivate();
 
   useEffect(() => {
     if (activeGoal) {
@@ -47,7 +47,7 @@ const DateModal = () => {
 
   return (
     <ModalBase isActive={isActive} setIsActive={setIsActive}>
-      {activeGoal && !isConfiguring ?
+      {activeGoal ?
         (<form onSubmit={submitForm}>
           <div className='date-modal-header'>
             <span className='date'>{date.toLocaleDateString('en-us', { day: 'numeric', month: 'long' })}</span>

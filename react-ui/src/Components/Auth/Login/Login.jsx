@@ -1,17 +1,15 @@
 import './Login.css';
-
+import { useEffect, useRef, useState } from "react";
+import { useLocation, useNavigate } from 'react-router-dom';
+import authStore from '../../../Store/authStore';
 import { instance } from '../../../api/axios';
-import { useRef, useState, useEffect } from "react"
-import useAuth from '../../../hooks/useAuth';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
-import useAuthStore from '../../../Store/useAuthStore';
 
 const LOGIN_URL = '/auth/login';
 
 const Login = () => {
-  const setAuth = useAuthStore(state => state.setAuth);
-  const persist = useAuthStore(state => state.persist);
-  const setPersist = useAuthStore(state => state.setPersist);
+  const setAuth = authStore(state => state.setAuth);
+  const persist = authStore(state => state.persist);
+  const setPersist = authStore(state => state.setPersist);
 
   const navigate = useNavigate();
   const location = useLocation();

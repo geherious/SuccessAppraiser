@@ -1,48 +1,69 @@
-import { axiosPrivateInstance } from "../api/axios";
-import { useEffect, useState } from "react";
-import useRefreshToken from "./useRefreshToken";
-import useAuth from "./useAuth";
+import authStore from '../Store/authStore';
+import refreshStore from '../Store/refreshStore';
+import { axiosPrivateInstance } from '../api/axios';
+import useRefreshToken from './useRefreshToken';
+
 
 const useAxiosPrivate = () => {
   const refresh = useRefreshToken();
-  const { auth, setAuth } = useAuth();
-  const [isConfiguring, setIsConfiguring] = useState(true);
-  const controller = new AbortController();
 
-  useEffect(() => {
-    setIsConfiguring(true);
-    const requestIntercept = axiosPrivateInstance.interceptors.request.use(
-      config => {
-        config.headers['Authorization'] = `Bearer ${auth?.accessToken}`;
-        return config;
-      }, (error) => Promise.reject(error)
-    );
+  const onAccessTokenFetched = async (access_token) => {
+    refreshStore.getState().subscribers.forEach(callback => callback(access_token));
+    refreshStore.setState({ subscribers: [] });
+  };
 
-    const responseIntercept = axiosPrivateInstance.interceptors.response.use(
-      response => response,
-      async (error) => {
-        let config = error?.config;
-        if (error?.response?.status === 401 && !config?.sent) {
-          config.sent = true;
-          let newAccessToken = refresh(controller.signal);
-          config.headers['Authorization'] = `Bearer ${newAccessToken}`;
-          return axiosPrivateInstance(config);
-        }
-        return Promise.reject(error);
+
+  axiosPrivateInstance.interceptors.request.use(
+    config => {
+      const token = authStore.getState().auth.accessToken;
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
       }
-    );
-
-    setIsConfiguring(false);
-
-    return () => {
-      axiosPrivateInstance.interceptors.request.eject(requestIntercept);
-      axiosPrivateInstance.interceptors.response.eject(responseIntercept);
-      setIsConfiguring(false);
-      controller.abort();
+      return config;
+    },
+    error => {
+      return Promise.reject(error);
     }
-  }, [auth])
+  );
 
-  return { axiosPrivate: axiosPrivateInstance, isConfiguring };
+  axiosPrivateInstance.interceptors.response.use(
+    response => response,
+    async error => {
+      const { config, response } = error;
+      const originalRequest = config;
+      if (response && response.status === 401 && !originalRequest._retry) {
+        if (refreshStore.getState().isRefreshing) {
+
+          // If refreshing is already happening, queue the request
+          return new Promise(async (resolve) => {
+            refreshStore.getState().addSubscriber(access_token => {
+              originalRequest.headers.Authorization = `Bearer ${access_token}`;
+              resolve(axiosPrivateInstance(originalRequest));
+            });
+          });
+        }
+
+        originalRequest._retry = true;
+        refreshStore.setState({ isRefreshing: true });
+
+        return new Promise(async (resolve, reject) => {
+          try {
+            const newToken = await refresh();
+            originalRequest.headers.Authorization = `Bearer ${newToken}`;
+            await onAccessTokenFetched(newToken);
+            resolve(axiosPrivateInstance(originalRequest));
+          } catch (err) {
+            reject(err);
+          } finally {
+            refreshStore.setState({ isRefreshing: false });
+          }
+        });
+      }
+
+      return Promise.reject(error);
+    }
+  );
+  return axiosPrivateInstance;
 }
 
 export default useAxiosPrivate;

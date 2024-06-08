@@ -5,14 +5,14 @@ import useHomeStore from "../Store/useHomeStore";
 import { useEffect, useMemo } from "react";
 
 const useNewGoal = () => {
-  const { isConfiguring, axiosPrivate } = useAxiosPrivate();
+  const axiosPrivate = useAxiosPrivate();
   const activeGoal = useHomeStore(state => state.activeGoal);
   const setActiveGoal = useHomeStore(state => state.setActiveGoal);
 
   const {
     data: goals,
     isLoading: IsLoadingGoals
-  } = useSWR(!isConfiguring ? goalsUrlEndpoint : null, axiosPrivate.get, { revalidateOnFocus: false });
+  } = useSWR(goalsUrlEndpoint, axiosPrivate.get, { revalidateOnFocus: false });
 
   useEffect(() => {
     if (activeGoal === null && goals) {

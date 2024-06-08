@@ -1,11 +1,11 @@
 import { Navigate, Outlet, useLocation } from "react-router-dom";
 import useAuth from "../../hooks/useAuth"
 import useRefreshToken from "../../hooks/useRefreshToken";
-import useAuthStore from "../../Store/useAuthStore";
+import authStore from "../../Store/authStore";
 
 
 const RequireAuth = () => {
-  const auth = useAuthStore(state => state.auth);
+  const auth = authStore(state => state.auth);
 
   return (
     auth?.accessToken ?

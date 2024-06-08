@@ -6,7 +6,7 @@ import { useCallback, useMemo } from "react";
 import { compareDateOnly } from "../Services/Calendar/calendarService";
 
 const useDates = () => {
-  const { isConfiguring, axiosPrivate } = useAxiosPrivate();
+  const axiosPrivate = useAxiosPrivate();
   const activeGoal = useHomeStore(state => state.activeGoal);
 
   const getKeyWithArgs = (date) => {
@@ -23,8 +23,8 @@ const useDates = () => {
   const lastMonth = new Date(currentDateArea.getFullYear(), currentDateArea.getMonth() - 1, 1);
   const nextMonth = new Date(currentDateArea.getFullYear(), currentDateArea.getMonth() + 1, 1);
 
-  const shouldFetch = !isConfiguring && activeGoal;
-  const fetchSettings = { revalidateOnFocus: false, revalidateIfStale: false };
+  const shouldFetch = activeGoal;
+  const fetchSettings = { revalidateOnFocus: false, revalidateIfStale: false, shouldRetryOnError: false };
 
   const { data: lastMonthDates, mutate: mutateLastMonth, isLoading: lastMonthIsLoading } = useSWR(shouldFetch ? getKeyWithArgs(lastMonth) : null,
     (args) => axiosPrivate.get(getGoalDateByMonth, { params: getParams(args.year, args.month) }).then(res => res.data), fetchSettings);
@@ -48,28 +48,31 @@ const useDates = () => {
     }
   }, [lastMonthDates, currentMonthDates, nextMonthDates]);
 
-  function insertNewDate(array, newDate) {
+  function insertNewDate(array, newObject) {
     console.log(array)
-    let index = array.findIndex(element => compareDateOnly(element.date, newDate) > 0);
+    let index = array.findIndex(element => {
+      return compareDateOnly(element.date, newObject.date) > 0;
+    });
     if (index === -1) {
-      array.push(newDate);
+      array.push(newObject);
     } else {
-      array.splice(index, 0, newDate);
+      array.splice(index, 0, newObject);
     }
+    console.log(array)
     return array;
   }
 
-  const mutate = useCallback((date, newDate) => {
+  const mutate = useCallback((date, newObject) => {
     const monthDiff = date.getMonth() - currentDateArea.getMonth();
     switch (monthDiff) {
       case 0:
-        mutateCurrentMonth(insertNewDate(currentMonthDates, newDate));
+        mutateCurrentMonth(insertNewDate(currentMonthDates, newObject));
         break;
       case -1:
-        mutateLastMonth(insertNewDate(lastMonthDates, newDate));
+        mutateLastMonth(insertNewDate(lastMonthDates, newObject));
         break;
       case 1:
-        mutateNextMonth(insertNewDate(nextMonthDates, newDate));
+        mutateNextMonth(insertNewDate(nextMonthDates, newObject));
         break;
       default:
         throw new Error('Invalid month difference in dates mutation');
