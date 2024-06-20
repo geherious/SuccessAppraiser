@@ -11,15 +11,17 @@ const Home = () => {
 
     <div className='container-fluid home'>
       <UpBar />
-      <div className='row no-gutters flex-grow-1 calendar-window'>
-        <div className='col-lg-2 p-0'>
+      <div className='row no-gutters content flex-grow-1 overflow-hidden'>
+        {/* <div className='col-lg-2 d-flex p-0'> */}
+        <div className='col-lg-2 h-100 d-flex p-0'>
           <SideBar />
         </div>
-        <div className='col p-0'>
+        {/* <div className='col d-flex p-0'> */}
+        <div className='col h-100 d-flex p-0'>
           <CalendarBody />
         </div>
       </div>
-      <DateModal></DateModal>
+      <DateModal/>
     </div>
   )
 }

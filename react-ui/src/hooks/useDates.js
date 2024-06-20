@@ -49,7 +49,6 @@ const useDates = () => {
   }, [lastMonthDates, currentMonthDates, nextMonthDates]);
 
   function insertNewDate(array, newObject) {
-    console.log(array)
     let index = array.findIndex(element => {
       return compareDateOnly(element.date, newObject.date) > 0;
     });
@@ -58,7 +57,6 @@ const useDates = () => {
     } else {
       array.splice(index, 0, newObject);
     }
-    console.log(array)
     return array;
   }
 

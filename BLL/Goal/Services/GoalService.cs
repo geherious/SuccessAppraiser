@@ -28,6 +28,7 @@ namespace SuccessAppraiser.BLL.Goal.Services
             }
 
             GoalItem newGoal = _mapper.Map<GoalItem>(createCommand);
+            newGoal.Name = newGoal.Name.Trim();
             newGoal.UserId = createCommand.UserId;
             await _dbContext.GoalItems.AddAsync(newGoal, ct);
             await _dbContext.SaveChangesAsync(ct);

@@ -1,12 +1,9 @@
 .side-bar {
-    padding: 8px;
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    width: 100%;
-
-    --shadow-color: #c7c6c6;
-    box-shadow: 
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  --shadow-color: #c7c6c6;
+  box-shadow:
     -2px 0 0 0 var(--shadow-color) inset,
     0 -1px 0 0 var(--shadow-color),
     0 1px 0 0 var(--shadow-color) inset;
@@ -14,25 +11,34 @@
 }
 
 .add-button {
-    width: clamp(32px, 0.5rem + 2vw, 4rem);
-    height: clamp(32px, 0.5rem + 2vw, 4rem);
-    padding: 3px;
-    background-color: #FC8937;
-    border: none;
+  /* width: clamp(32px, 0.5rem + 2vw, 4rem);
+  height: clamp(32px, 0.5rem + 2vw, 4rem); */
+  width: 32px;
+  height: 32px;
+  margin: 5px auto;
+  background-color: #FC8937;
+  border: none;
 
 }
 
 .add-icon {
-    width: 80%;
-    height: 80%;
-    display: block;
-    margin: auto;
-    filter: invert(100%) sepia(100%) saturate(1%) hue-rotate(84deg) brightness(111%) contrast(101%);
+  width: 80%;
+  height: 80%;
+  /* display: block;
+  margin: auto; */
+  filter: invert(100%) sepia(100%) saturate(1%) hue-rotate(84deg) brightness(111%) contrast(101%);
 }
 
 .goal-list {
-    padding: 3px;
+  margin-bottom: auto;
+  list-style: none;
+  padding: 0;
+  overflow-y: auto;
+}
+
+.goal-list > li {
+  padding: 0;
 }
 .active-goal {
-    background-color: #FC8937;
+  background-color: #FC8937;
 }
