@@ -20,10 +20,8 @@ const Cell = ({ date, dateState, cellNumber }) => {
         style={dateState.state ? { backgroundColor: dateState.state.color } : { backgroundColor: statelessColor }}
         className={'cell-status'}
         onClick={() => {
-          if (dateState.state === null) {
-            setModalIsActive(true);
-            setModalDate(date);
-          }
+          setModalDate(date);
+          setModalIsActive(true);
         }}
       >
       </span>

@@ -17,9 +17,11 @@ const SideBar = () => {
   if (goals) {
     content =
       <>
+      <div className='add-button-container'>
         <button type='button' className='add-button'>
           <img src={plusImg} alt='Add' className='add-icon' />
         </button>
+      </div>
         <ul className='goal-list'>
           {goals.map(goal =>
             <li key={goal.id} onClick={() => setActiveGoal(goal)} className={clsx(goal === activeGoal && 'active-goal')}>{goal.name}</li>

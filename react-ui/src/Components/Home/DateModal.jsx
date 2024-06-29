@@ -15,11 +15,12 @@ const DateModal = () => {
   const activeGoal = useHomeStore(state => state.activeGoal);
   const [status, setStatus] = useState('');
   const [comment, setComment] = useState('');
+  const [existingDate, setExistingDate] = useState(null);
 
   const isActive = useHomeStore(state => state.modalIsActive);
   const setIsActive = useHomeStore(state => state.setModalIsActive);
   const date = useHomeStore(state => state.modalDate);
-  const { mutate } = useDates();
+  const { dates, mutate } = useDates();
 
   const axiosPrivate = useAxiosPrivate();
 
@@ -29,9 +30,31 @@ const DateModal = () => {
     }
   }, [activeGoal])
 
+  useEffect(() => {
+    if (dates){
+      let savedDate = dates.find(d => d.date === getDateOnlyString(date));
+      if (savedDate){
+        setExistingDate(savedDate);
+        setStatus(savedDate.stateId);
+        setComment(savedDate.comment);
+      }
+      else{
+        setExistingDate(null);
+      }
+    }
+  }, [date])
+
   const submitForm = async (e) => {
     e.preventDefault();
     const newData = { date: getDateOnlyString(date), comment: comment, stateId: status, goalId: activeGoal.id }
+    if (existingDate){
+      console.log(existingDate);
+      return;
+    }
+    else {
+      console.log("asd");
+      return;
+    }
     try {
       await axiosPrivate.post(postGoalDate, JSON.stringify(newData));
       delete newData.goalId;
@@ -39,14 +62,19 @@ const DateModal = () => {
       setIsActive(false);
     } catch (error) {
       console.log(error);
-      setIsActive(false);
+      onClose();
       toast.error('Something went wrong');
 
     }
   }
 
+  const onClose = () => {
+    setComment('');
+    setIsActive(false);
+  }
+
   return (
-    <ModalBase isActive={isActive} setIsActive={setIsActive}>
+    <ModalBase isActive={isActive} setIsActive={setIsActive} onModalClose={onClose}>
       {activeGoal ?
         (<form onSubmit={submitForm}>
           <div className='date-modal-header'>
@@ -66,7 +94,7 @@ const DateModal = () => {
 
           <div className="date-modal-footer">
             <button type="submit">Save</button>
-            <button type="button" onClick={() => setIsActive(false)}>Cancel</button>
+            <button type="button" onClick={onClose}>Cancel</button>
           </div>
           <div className='date-modal-footer'>
 
