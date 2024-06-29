@@ -9,7 +9,7 @@ namespace SuccessAppraiser.BLL
         public static IServiceCollection AddProjectServices(this IServiceCollection services)
         {
             GoalRegister.RegisterGoalServices(services);
-            Authregister.RegisterAuthServices(services);
+            AuthRegister.RegisterAuthServices(services);
             return services;
         }
     }

@@ -4,7 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace SuccessAppraiser.BLL.Auth
 {
-    public static class Authregister
+    public static class AuthRegister
     {
         public static void RegisterAuthServices(IServiceCollection services)
         {
