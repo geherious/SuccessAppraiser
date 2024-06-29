@@ -14,18 +14,18 @@ namespace Api.Filters
             {
                 if (argument == null)
                 {
-                    return;
+                    continue;
                 }
                 var validatorType = typeof(IValidator<>).MakeGenericType(argument.GetType());
                 if (validatorType == null)
                 {
-                    return;
+                    continue;
                 }
                 IValidator? validator = context.HttpContext.RequestServices.GetService(validatorType) as IValidator;
 
                 if (validator == null)
                 {
-                    return;
+                    continue;
                 }
 
                 var validationResult = validator.Validate(new ValidationContext<object>(argument));
