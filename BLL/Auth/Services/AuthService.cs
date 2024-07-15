@@ -3,6 +3,8 @@ using SuccessAppraiser.BLL.Auth.Errors;
 using SuccessAppraiser.BLL.Auth.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using SuccessAppraiser.Data.Entities;
+using FluentValidation;
+using FluentValidation.Results;
 
 namespace SuccessAppraiser.BLL.Auth.Services
 {
@@ -26,7 +28,11 @@ namespace SuccessAppraiser.BLL.Auth.Services
 
             if (!result.Succeeded)
             {
-                throw new RegisterException(result.Errors);
+                var message = $"A user with provided data already exists";
+                var errors = result.Errors
+                    .Select(x => new ValidationFailure(nameof(ApplicationUser), x.Description))
+                    .ToList();
+                throw new ValidationException(message, errors);
             }
 
         }

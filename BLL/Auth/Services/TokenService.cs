@@ -1,11 +1,12 @@
 ﻿using SuccessAppraiser.BLL.Auth.Services.Interfaces;
-using SuccessAppraiser.BLL.Common.Exceptions;
 using Data.Enums;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using SuccessAppraiser.Data.Context;
 using SuccessAppraiser.Data.Entities;
 using System.Security.Claims;
+using FluentValidation;
+using FluentValidation.Results;
 
 namespace SuccessAppraiser.BLL.Auth.Services
 {
@@ -23,7 +24,8 @@ namespace SuccessAppraiser.BLL.Auth.Services
         {
             if (await _dbContext.Users.FindAsync(userId, ct) == null)
             {
-                throw new NotFoundException(nameof(userId));
+                var message = $"A user with id {userId} doesn't exist";
+                throw new ValidationException(message, new[] { new ValidationFailure(nameof(ApplicationUser), message) });
             }
 
             List<Claim> userClaims =
@@ -56,7 +58,9 @@ namespace SuccessAppraiser.BLL.Auth.Services
 
             if (tokenToDelete == null)
             {
-                return;
+                var message = $"Provided refresh token doesn't exist";
+                throw new ValidationException(message, new[] { new ValidationFailure(nameof(RefreshToken), message) });
+
             }
 
             await RemoveRefreshTokenAsync(tokenToDelete, ct);
@@ -73,7 +77,6 @@ namespace SuccessAppraiser.BLL.Auth.Services
             var tokenEntity = await _dbContext.RefreshTokens.FirstOrDefaultAsync(x => x.Token == token, ct);
             if (tokenEntity == null)
             {
-                // TODO: need to remove all tokens
                 return null;
             }
 

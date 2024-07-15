@@ -21,7 +21,7 @@ namespace SuccessAppraiser
 
             var config = builder.Configuration;
 
-            builder.Services.AddConfiguredDbContext(builder.Configuration);
+            builder.Services.AddConfiguredDbContext(builder.Environment.EnvironmentName, builder.Configuration);
 
             builder.Services.AddIdentity<ApplicationUser, IdentityRole<Guid>>(x =>
             {

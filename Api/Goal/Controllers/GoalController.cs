@@ -4,18 +4,19 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using SuccessAppraiser.BLL.Common.Exceptions;
 using SuccessAppraiser.BLL.Goal.Contracts;
 using SuccessAppraiser.BLL.Goal.Services.Interfaces;
 using SuccessAppraiser.Data.Entities;
 using System;
 using System.Security.Claims;
 using Api.Filters;
+using FluentValidation;
 
 namespace SuccessAppraiser.Controllers.Goal
 {
     [ApiController]
     [Authorize]
+    [ValidationExceptionFilter]
     public class GoalController : ControllerBase
     {
         private readonly IGoalService _goalService;
@@ -41,52 +42,33 @@ namespace SuccessAppraiser.Controllers.Goal
         }
 
         [HttpPost]
-        [ValidationFilter]
+        [DtoValidationFilter]
         [Route("goals")]
         public async Task<IActionResult> Goals([FromBody] CreateGoalDto goalDto, CancellationToken ct)
         {
             Guid userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
 
-            GoalItem newGoal;
             var command = _mapper.Map<CreateGoalCommand>(goalDto);
             command.UserId = userId;
-            try
-            {
-                newGoal = await _goalService.CreateGoalAsync(command, ct);
-            }
-            catch (NotFoundException exception)
-            {
-                return BadRequest(exception.Message);
-            }
+
+            GoalItem newGoal = await _goalService.CreateGoalAsync(command, ct);
 
             var result = _mapper.Map<GetUserGoalDto>(newGoal);
             return Ok(result);
         }
 
         [HttpPost]
-        [ValidationFilter]
+        [DtoValidationFilter]
         [Route("dates")]
         public async Task<IActionResult> GoalDate([FromBody] CreateGoalDateDto goalDateDto, CancellationToken ct)
         {
             Guid userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
 
+            await _goalService.UserhasGoalOrThrowAsync(userId, goalDateDto.GoalId, ct);
 
-            if (!await _goalService.UserhasGoalAsync(userId, goalDateDto.GoalId, ct))
-            {
-                return BadRequest("There is no such goal with provided ID");
-            }
-
-            GoalDate newGoalDate;
             var command = _mapper.Map<CreateGoalDateCommand>(goalDateDto);
 
-            try
-            {
-                newGoalDate = await _goalDateService.CreateGoalDateAsync(command, ct);
-            }
-            catch (Exception ex) when (ex is NotFoundException || ex is ArgumentException)
-            {
-                return BadRequest(ex.Message);
-            }
+            GoalDate newGoalDate = await _goalDateService.CreateGoalDateAsync(command, ct);
 
             var result = _mapper.Map<GetGoalDateDto>(newGoalDate);
 
@@ -94,16 +76,13 @@ namespace SuccessAppraiser.Controllers.Goal
         }
 
         [HttpGet]
-        [ValidationFilter]
+        [DtoValidationFilter]
         [Route("dates")]
         public async Task<IActionResult> GetGoalDates([FromQuery] GetGoalDatesByMonthDto dto, CancellationToken ct)
         {
             Guid userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
 
-            if (!await _goalService.UserhasGoalAsync(userId, dto.GoalId))
-            {
-                return BadRequest("There is no such goal with provided ID");
-            }
+            await _goalService.UserhasGoalOrThrowAsync(userId, dto.GoalId, ct);
 
             var command = _mapper.Map<GetGoalDatesByMonthQuerry>(dto);
 

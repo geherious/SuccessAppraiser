@@ -14,6 +14,7 @@ namespace Api.Auth.Controllers
 {
     [ApiController]
     [Route("auth/[action]")]
+    [ValidationExceptionFilter]
     public class AuthController : ControllerBase
     {
         private readonly UserManager<ApplicationUser> _userManager;
@@ -35,7 +36,7 @@ namespace Api.Auth.Controllers
         }
 
         [HttpPost]
-        [ValidationFilter]
+        [DtoValidationFilter]
         public async Task<IActionResult> Register([FromBody] RegisterDto dto)
         {
             var command = _mapper.Map<RegisterCommand>(dto);
@@ -44,24 +45,15 @@ namespace Api.Auth.Controllers
             {
                 return Conflict(new { message = "User already exists" });
             }
-            try
-            {
-                await _authService.RegisterAsync(command);
-            }
-            catch (RegisterException ex)
-            {
-                foreach (var error in ex.Errors)
-                {
-                    ModelState.TryAddModelError(error.Code, error.Description);
-                }
-                return BadRequest(ModelState);
-            }
+
+            await _authService.RegisterAsync(command);
+
             return Ok();
 
         }
 
         [HttpPost]
-        [ValidationFilter]
+        [DtoValidationFilter]
         public async Task<IActionResult> Login([FromBody] LoginDto dto)
         {
             var user = await _userManager.FindByEmailAsync(dto.Email);
@@ -132,7 +124,6 @@ namespace Api.Auth.Controllers
                 Secure = true,
                 Expires = refreshToken.Expires
             });
-            // check user from token and test
 
             return Ok(new { AccessToken = accessToken, Username = refreshToken.User.UserName });
         }
