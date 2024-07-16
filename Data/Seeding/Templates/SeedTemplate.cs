@@ -9,34 +9,33 @@ namespace SuccessAppraiser.Data.Seeding.Templates
     {
         public static void Seed(ApplicationDbContext dbContext)
         {
-            string jsonString = File.ReadAllText("../Data/Seeding/Templates/BaseTemplates.json");
-            List<TemplateSeedBase>? templates = JsonSerializer.Deserialize<List<TemplateSeedBase>>(jsonString);
+            CreateHabbitTemplate(dbContext);
 
-            if (templates != null && !dbContext.GoalTemplates.Any() )
-            {
-                foreach (TemplateSeedBase template in templates)
-                {
-                    GoalTemplate goalTemplate = new GoalTemplate();
-                    goalTemplate.Name = template.Name;
+        }
 
-                    List<DayState> dayStatesList = new List<DayState>();
-                    foreach(KeyValuePair<string, string> kvp in template.States)
-                    {
-                        DayState dayState = new DayState();
-                        dayState.Name = kvp.Key;
-                        dayState.Color = kvp.Value;
-                        dayState.Templates.Add(goalTemplate);
+        private static void CreateHabbitTemplate(ApplicationDbContext dbContext)
+        {
+            GoalTemplate template = new GoalTemplate();
+            template.Name = "Habbit";
 
-                        dbContext.DayStates.Add(dayState);
-                        dayStatesList.Add(dayState);
-                    }
+            DayState easy = new DayState();
+            easy.Name = "Easy";
+            easy.Color = "#58E000";
 
-                    goalTemplate.States = dayStatesList;
-                    dbContext.GoalTemplates.Add(goalTemplate);
+            DayState average = new DayState();
+            average.Name = "Average";
+            average.Color = "#FFF800";
 
-                    dbContext.SaveChanges();
-                }
-            }
+            DayState hard = new DayState();
+            hard.Name = "Hard";
+            hard.Color = "#FF2C00";
+
+            template.States.Add(easy);
+            template.States.Add(average);
+            template.States.Add(hard);
+
+            dbContext.GoalTemplates.Add(template);
+            dbContext.SaveChanges();
         }
     }
 }
