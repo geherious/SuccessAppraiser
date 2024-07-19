@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using SuccessAppraiser.Data.Context;
 using SuccessAppraiser.Data.Entities;
 using FluentValidation;
-using FluentValidation.Results;
+using BLL.Common.Exceptions.Validation;
 
 namespace SuccessAppraiser.BLL.Goal.Services
 {
@@ -22,11 +22,10 @@ namespace SuccessAppraiser.BLL.Goal.Services
 
         public async Task<GoalItem> CreateGoalAsync(CreateGoalCommand createCommand, CancellationToken ct = default)
         {
-            var template = _dbContext.GoalTemplates.Find(createCommand.TemplateId);
+            var template = await _dbContext.GoalTemplates.FindAsync(createCommand.TemplateId, ct);
             if (template == null)
             {
-                var message = $"A template with id {createCommand.TemplateId} doesn't exist";
-                throw new ValidationException(message, new[] { new ValidationFailure(nameof(GoalTemplate), message) });
+                throw new InvalidIdException(nameof(GoalTemplate), createCommand.TemplateId);
             }
 
             GoalItem newGoal = _mapper.Map<GoalItem>(createCommand);
@@ -47,8 +46,7 @@ namespace SuccessAppraiser.BLL.Goal.Services
             }
             else
             {
-                var message = $"A goal with id {goalId} doesn't exist";
-                throw new ValidationException(message, new[] { new ValidationFailure(nameof(GoalItem), message) });
+                throw new InvalidIdException(nameof(GoalItem), goalId);
             }
         }
 
@@ -59,12 +57,11 @@ namespace SuccessAppraiser.BLL.Goal.Services
 
         public async Task UserhasGoalOrThrowAsync(Guid userId, Guid goalId, CancellationToken ct = default)
         {
-            GoalItem? goal = await _dbContext.GoalItems.FirstOrDefaultAsync(g => g.UserId == userId && g.Id == goalId);
+            GoalItem? goal = await _dbContext.GoalItems.FirstOrDefaultAsync(g => g.UserId == userId && g.Id == goalId, ct);
 
             if (goal  == null)
             {
-                var message = $"A goal with id {goalId} was not found";
-                throw new ValidationException(message, new[] { new ValidationFailure("Goal id", message) });
+                throw new InvalidIdException(nameof(GoalItem), goalId);
             }
         }
     }

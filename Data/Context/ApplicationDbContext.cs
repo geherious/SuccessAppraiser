@@ -7,16 +7,22 @@ namespace SuccessAppraiser.Data.Context
 {
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser, IdentityRole<Guid>, Guid>
     {
-        public DbSet<DayState> DayStates { get; set; }
-        public DbSet<GoalDate> GoalDates { get; set; }
-        public DbSet<GoalItem> GoalItems { get; set; }
-        public DbSet<GoalTemplate> GoalTemplates { get; set; }
-        public DbSet<ApplicationUser> ApplicationUsers { get; set; }
-        public DbSet<RefreshToken> RefreshTokens { get; set; }
+        public virtual DbSet<DayState> DayStates { get; set; }
+        public virtual DbSet<GoalDate> GoalDates { get; set; }
+        public virtual DbSet<GoalItem> GoalItems { get; set; }
+        public virtual DbSet<GoalTemplate> GoalTemplates { get; set; }
+        public virtual DbSet<ApplicationUser> ApplicationUsers { get; set; }
+        public virtual DbSet<RefreshToken> RefreshTokens { get; set; }
 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {
             Database.EnsureCreated();
+        }
+
+        // for testing
+        public ApplicationDbContext()
+        {
+
         }
 
         protected override void OnModelCreating(ModelBuilder builder)

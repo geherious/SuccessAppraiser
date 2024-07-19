@@ -6,7 +6,8 @@ using SuccessAppraiser.Data.Context;
 using SuccessAppraiser.Data.Entities;
 using FluentValidation;
 using FluentValidation.Results;
-using System.Reflection.Metadata.Ecma335;
+using BLL.Common.Exceptions.Validation;
+using BLL.Goal.Exceptions;
 
 namespace SuccessAppraiser.BLL.Goal.Services
 {
@@ -26,16 +27,14 @@ namespace SuccessAppraiser.BLL.Goal.Services
 
             if (goal == null)
             {
-                var message = $"A goal with id {createCommand.GoalId} doesn't exist";
-                throw new ValidationException(message, new[] { new ValidationFailure(nameof(GoalTemplate), message) });
+                throw new InvalidIdException(nameof(GoalItem), createCommand.GoalId);
             }
 
             ValidateDate(goal, createCommand.Date);
 
-            if (!goal.Template.States.Any(s => s.Id == createCommand.StateId))
+            if (!goal.Template!.States.Any(s => s.Id == createCommand.StateId))
             {
-                var message = $"Invalid state with id {createCommand.StateId} for template {goal.Template.Name}";
-                throw new ValidationException(message, new[] { new ValidationFailure(nameof(DayState), message) });
+                throw new InvalidIdException(nameof(DayState), createCommand.StateId);
             }
 
             var newGoalDate = _mapper.Map<GoalDate>(createCommand);
@@ -72,7 +71,7 @@ namespace SuccessAppraiser.BLL.Goal.Services
             if (datesFailures.Count > 0)
             {
                 var message = "Provided date is invalid";
-                throw new ValidationException(message, datesFailures);
+                throw new InvalidDateException(message, datesFailures);
             }
         }
 
@@ -82,8 +81,7 @@ namespace SuccessAppraiser.BLL.Goal.Services
 
             if (goal == null)
             {
-                var message = $"A goal with id {getQuerry.GoalId} doesn't exist";
-                throw new ValidationException(message, new[] { new ValidationFailure(nameof(GoalTemplate), message) });
+                throw new InvalidIdException(nameof(GoalItem), getQuerry.GoalId);
             }
 
             var dates = await _dbContext.GoalDates.Where(d =>
