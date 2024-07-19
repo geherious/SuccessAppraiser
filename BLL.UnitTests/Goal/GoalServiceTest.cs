@@ -7,11 +7,11 @@ using SuccessAppraiser.Data.Context;
 using SuccessAppraiser.Data.Entities;
 using MockQueryable.NSubstitute;
 using NSubstitute.ReturnsExtensions;
-using FluentValidation;
 using FluentAssertions;
 using BLL.Common.Exceptions.Validation;
+using BLL.UnitTests.Common;
 
-namespace BLL.UnitTests
+namespace BLL.UnitTests.Goal
 {
     public class GoalServiceTest
     {

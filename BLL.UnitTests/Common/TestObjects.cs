@@ -1,7 +1,7 @@
 ﻿using SuccessAppraiser.Data.Entities;
 using System;
 
-namespace BLL.UnitTests
+namespace BLL.UnitTests.Common
 {
     public class TestObjects
     {

@@ -2,8 +2,8 @@
 using BLL.Common.Exceptions.Validation;
 using BLL.Goal.Contracts;
 using BLL.Goal.Exceptions;
+using BLL.UnitTests.Common;
 using FluentAssertions;
-using FluentValidation;
 using MockQueryable.NSubstitute;
 using NSubstitute;
 using SuccessAppraiser.BLL.Goal.Contracts;
@@ -11,7 +11,7 @@ using SuccessAppraiser.BLL.Goal.Services;
 using SuccessAppraiser.Data.Context;
 using SuccessAppraiser.Data.Entities;
 
-namespace BLL.UnitTests
+namespace BLL.UnitTests.Goal
 {
     public class GoalDateServiceTest
     {
