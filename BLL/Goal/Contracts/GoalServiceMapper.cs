@@ -4,9 +4,9 @@ using SuccessAppraiser.Data.Entities;
 
 namespace BLL.Goal.Contracts
 {
-    public class Mapper : Profile
+    public class GoalServiceMapper : Profile
     {
-        public Mapper()
+        public GoalServiceMapper()
         {
             CreateMap<GoalItem, CreateGoalCommand>().ReverseMap();
             CreateMap<GoalDate, CreateGoalDateCommand>().ReverseMap();

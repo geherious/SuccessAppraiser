@@ -4,11 +4,11 @@ using SuccessAppraiser.Data.Entities;
 
 namespace Api.Goal.Contracts
 {
-    public class Mapper : Profile
+    public class GoalApiMapper : Profile
     {
-        public Mapper()
+        public GoalApiMapper()
         {
-            CreateMap<GetUserGoalDto, GoalItem>().ReverseMap();
+            CreateMap<GetUserGoalDto, Goal>().ReverseMap();
             CreateMap<CreateGoalDto, CreateGoalCommand>().ReverseMap();
             CreateMap<CreateGoalDateDto, CreateGoalDateCommand>().ReverseMap();
             CreateMap<GetGoalDatesByMonthDto, GetGoalDatesByMonthQuerry>().ReverseMap();

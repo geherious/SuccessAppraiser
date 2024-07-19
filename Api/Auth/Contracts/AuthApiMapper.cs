@@ -3,9 +3,9 @@ using SuccessAppraiser.BLL.Auth.Contracts;
 
 namespace Api.Auth.Contracts
 {
-    public class Mapper : Profile
+    public class AuthApiMapper : Profile
     {
-        public Mapper()
+        public AuthApiMapper()
         {
             CreateMap<RegisterDto, RegisterCommand>().ReverseMap();
         }
