@@ -35,6 +35,10 @@ namespace SuccessAppraiser.Data.Context
             builder.Entity<GoalDate>()
                 .HasIndex(x => new { x.GoalId, x.Date })
                 .IsUnique();
+
+            builder.Entity<GoalTemplate>()
+                .HasIndex(x => x.Name)
+                .IsUnique();
         }
     }
 }

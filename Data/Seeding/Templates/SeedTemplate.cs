@@ -34,8 +34,16 @@ namespace SuccessAppraiser.Data.Seeding.Templates
             template.States.Add(average);
             template.States.Add(hard);
 
-            dbContext.GoalTemplates.Add(template);
-            dbContext.SaveChanges();
+            GoalTemplate existingTemplate = dbContext.GoalTemplates.FirstOrDefault(x => x.Name == template.Name)!;
+            if (existingTemplate != null)
+            {
+                return;
+            }
+            else
+            {
+                dbContext.GoalTemplates.Add(template);
+                dbContext.SaveChanges();
+            }
         }
     }
 }
