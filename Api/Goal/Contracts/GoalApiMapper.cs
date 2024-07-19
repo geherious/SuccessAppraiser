@@ -8,7 +8,7 @@ namespace Api.Goal.Contracts
     {
         public GoalApiMapper()
         {
-            CreateMap<GetUserGoalDto, Goal>().ReverseMap();
+            CreateMap<GetUserGoalDto, GoalItem>().ReverseMap();
             CreateMap<CreateGoalDto, CreateGoalCommand>().ReverseMap();
             CreateMap<CreateGoalDateDto, CreateGoalDateCommand>().ReverseMap();
             CreateMap<GetGoalDatesByMonthDto, GetGoalDatesByMonthQuerry>().ReverseMap();
