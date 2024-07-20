@@ -1,12 +1,11 @@
 ﻿using SuccessAppraiser.BLL.Auth.Services.Interfaces;
 using Data.Enums;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using SuccessAppraiser.Data.Context;
 using SuccessAppraiser.Data.Entities;
 using System.Security.Claims;
-using FluentValidation;
-using FluentValidation.Results;
+using BLL.Common.Exceptions.Validation;
+using BLL.Auth.Errors;
 
 namespace SuccessAppraiser.BLL.Auth.Services
 {
@@ -15,17 +14,16 @@ namespace SuccessAppraiser.BLL.Auth.Services
         private readonly ApplicationDbContext _dbContext;
         private readonly IJwtService _jwtService;
 
-        public TokenService(ApplicationDbContext dbContext, IConfiguration configuration, IJwtService jwtService)
+        public TokenService(ApplicationDbContext dbContext, IJwtService jwtService)
         {
             _dbContext = dbContext;
             _jwtService = jwtService;
         }
         public async Task<RefreshToken> AddRefreshTokenAsync(Guid userId, CancellationToken ct = default)
         {
-            if (await _dbContext.Users.FindAsync(userId, ct) == null)
+            if (await _dbContext.ApplicationUsers.FindAsync(userId, ct) == null)
             {
-                var message = $"A user with id {userId} doesn't exist";
-                throw new ValidationException(message, new[] { new ValidationFailure(nameof(ApplicationUser), message) });
+                throw new InvalidIdException(nameof(ApplicationUser), userId);
             }
 
             List<Claim> userClaims =
@@ -58,8 +56,7 @@ namespace SuccessAppraiser.BLL.Auth.Services
 
             if (tokenToDelete == null)
             {
-                var message = $"Provided refresh token doesn't exist";
-                throw new ValidationException(message, new[] { new ValidationFailure(nameof(RefreshToken), message) });
+                throw new InvalidTokenException();
 
             }
 

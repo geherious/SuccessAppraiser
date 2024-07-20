@@ -21,11 +21,11 @@ namespace BLL.UnitTests.Goal
 
         public GoalDateServiceTest()
         {
-            List<GoalItem> goals = new() { TestObjects.getHabbitGoal() };
+            List<GoalItem> goals = new() { GoalObjects.getHabbitGoal() };
             var goalsMock = goals.AsQueryable().BuildMockDbSet();
             _dbContext.GoalItems.Returns(goalsMock);
 
-            List<GoalTemplate> templates = new() { TestObjects.getHabbitTemplate() };
+            List<GoalTemplate> templates = new() { GoalObjects.getHabbitTemplate() };
             var templatesMock = templates.AsQueryable().BuildMockDbSet();
             _dbContext.GoalTemplates.Returns(templatesMock);
 
@@ -53,8 +53,8 @@ namespace BLL.UnitTests.Goal
         [MemberData(nameof(GetValidDates_StatingFrom12To24))]
         public async Task CreateGoalDateAsync_ShouldReturnNewDate(DateOnly date)
         {
-            DayState easy = TestObjects.GetEasyDayState();
-            GoalItem goal = TestObjects.getHabbitGoal();
+            DayState easy = GoalObjects.GetEasyDayState();
+            GoalItem goal = GoalObjects.getHabbitGoal();
             CreateGoalDateCommand command = new CreateGoalDateCommand(date, "Comment", easy.Id, goal.Id);
 
             GoalDate newDate = await _service.CreateGoalDateAsync(command);
@@ -68,22 +68,23 @@ namespace BLL.UnitTests.Goal
         [Fact]
         public async Task CreateGoalDateAsync_ShouldThrow_WhenGoalDoesNotExist()
         {
-            DayState easy = TestObjects.GetEasyDayState();
-            GoalItem goal = TestObjects.getHabbitGoal();
+            DayState easy = GoalObjects.GetEasyDayState();
+            GoalItem goal = GoalObjects.getHabbitGoal();
             DateOnly date = new DateOnly(2024, 06, 13);
             CreateGoalDateCommand command = new CreateGoalDateCommand(date, "Comment", easy.Id, Guid.NewGuid());
 
             Func<Task> act = () => _service.CreateGoalDateAsync(command);
 
-            await act.Should().ThrowAsync<InvalidIdException>();
+            await act.Should().ThrowAsync<InvalidIdException>()
+                .Where(e => e.ClassName == nameof(GoalItem));
         }
 
         [Theory]
         [MemberData(nameof(GetInvalidDates))]
         public async Task CreateGoalDateAsync_ShouldThrow_WhenInvalidDates(DateOnly date)
         {
-            DayState easy = TestObjects.GetEasyDayState();
-            GoalItem goal = TestObjects.getHabbitGoal();
+            DayState easy = GoalObjects.GetEasyDayState();
+            GoalItem goal = GoalObjects.getHabbitGoal();
             CreateGoalDateCommand command = new CreateGoalDateCommand(date, "Comment", easy.Id, goal.Id);
 
             Func<Task> act = () => _service.CreateGoalDateAsync(command);
@@ -94,14 +95,14 @@ namespace BLL.UnitTests.Goal
         [Fact]
         public async Task CreateGoalDateAsync_ShouldThrow_WhenDateIsInFuture()
         {
-            GoalItem goal = TestObjects.getHabbitGoal();
+            GoalItem goal = GoalObjects.getHabbitGoal();
             DateOnly yesterday = DateOnly.FromDateTime(DateTime.Now).AddDays(-1);
             goal.DateStart = yesterday;
             List<GoalItem> goals = new() { goal };
             var goalsMock = goals.AsQueryable().BuildMockDbSet();
             _dbContext.GoalItems.Returns(goalsMock);
 
-            DayState easy = TestObjects.GetEasyDayState();
+            DayState easy = GoalObjects.GetEasyDayState();
             DateOnly date = DateOnly.FromDateTime(DateTime.Now).AddDays(2);
             CreateGoalDateCommand command = new CreateGoalDateCommand(date, "Comment", easy.Id, goal.Id);
 

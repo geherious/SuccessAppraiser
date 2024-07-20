@@ -30,7 +30,7 @@ namespace BLL.UnitTests.Goal
         [Fact]
         public async Task CreateGoalAsync_ShouldReturnNewGoal_WhenTemplateExists()
         {
-            GoalTemplate template = TestObjects.getHabbitTemplate();
+            GoalTemplate template = GoalObjects.getHabbitTemplate();
             CreateGoalCommand command = new CreateGoalCommand(
                 "Name", "Description", 12, new DateOnly(2024, 10, 12), template.Id);
             Guid userGuid = Guid.NewGuid();
@@ -45,12 +45,18 @@ namespace BLL.UnitTests.Goal
             goal.DaysNumber.Should().Be(12);
             goal.DateStart.Should().Be(new DateOnly(2024, 10, 12));
             goal.TemplateId.Should().Be(template.Id);
+
+            await _dbContext.GoalItems.Received(1)
+                .AddAsync(Arg.Any<GoalItem>(), Arg.Any<CancellationToken>());
+
+            await _dbContext.Received(1)
+                .SaveChangesAsync(Arg.Any<CancellationToken>());
         }
 
         [Fact]
         public async Task CreateGoalAsync_ShouldThrow_WhenTemplateDoesNotExist()
         {
-            GoalTemplate template = TestObjects.getHabbitTemplate();
+            GoalTemplate template = GoalObjects.getHabbitTemplate();
             CreateGoalCommand command = new CreateGoalCommand(
                 "Name", "Description", 12, new DateOnly(2024, 10, 12), template.Id);
             Guid userGuid = Guid.NewGuid();
@@ -66,20 +72,21 @@ namespace BLL.UnitTests.Goal
         [Fact]
         public async Task DeleteGoalAsync_ShouldDelete_WhenGoalExists()
         {
-            GoalItem goal = TestObjects.getHabbitGoal();
-
+            GoalItem goal = GoalObjects.getHabbitGoal();
             _dbContext.GoalItems.FindAsync(goal.Id, Arg.Any<CancellationToken>()).Returns(goal);
 
             await _service.DeleteGoalAsync(goal.Id);
 
-            _dbContext.GoalItems.Received(1).Remove(goal);
+            _dbContext.GoalItems.Received(1)
+                .Remove(goal);
+            await _dbContext.Received(1)
+                .SaveChangesAsync(Arg.Any<CancellationToken>());
         }
 
         [Fact]
         public async Task DeleteGoalAsync_ShouldThrow_WhenGoalDoesNotExist()
         {
-            GoalItem goal = TestObjects.getHabbitGoal();
-
+            GoalItem goal = GoalObjects.getHabbitGoal();
             _dbContext.GoalItems.FindAsync(goal.Id, Arg.Any<CancellationToken>()).ReturnsNull();
 
             Func<Task> act = () => _service.DeleteGoalAsync(goal.Id);
@@ -92,26 +99,32 @@ namespace BLL.UnitTests.Goal
         [Fact]
         public async Task UserHasGoalAsync_ShouldBeOk_WhenGoalExists()
         {
-            GoalItem goal = TestObjects.getHabbitGoal();
+            GoalItem goal = GoalObjects.getHabbitGoal();
             Guid userId = Guid.Parse("cffaea27-8a8f-471d-aa12-39913ffbbda3");
-            List<GoalItem> goals = new() { goal };
-            var goalsMock = goals.AsQueryable().BuildMockDbSet();
+            BuildGoalMock(goal);
 
-
-            _dbContext.GoalItems.Returns(goalsMock);
             await _service.UserhasGoalOrThrowAsync(userId, goal.Id);
+        }
+
+        private void BuildGoalMock(GoalItem? goal = null)
+        {
+            List<GoalItem> goalList = new();
+            if (goal != null)
+            {
+                goalList.Add(goal);
+            }
+            var goalsMock = goalList.AsQueryable().BuildMockDbSet();
+            _dbContext.GoalItems.Returns(goalsMock);
         }
 
         [Fact]
         public async Task UserHasGoalAsync_ShouldThrow_WhenGoalDoesNotExist()
         {
-            GoalItem goal = TestObjects.getHabbitGoal();
+            GoalItem goal = GoalObjects.getHabbitGoal();
             Guid userId = Guid.Parse("cffaea27-8a8f-471d-aa12-39913ffbbda3");
-            List<GoalItem> goals = new() { goal };
-            var goalsMock = goals.AsQueryable().BuildMockDbSet();
-            _dbContext.GoalItems.Returns(goalsMock);
+            BuildGoalMock(goal);
 
-            Func<Task> act = () => _service.UserhasGoalOrThrowAsync(userId, Guid.NewGuid()); ;
+            Func<Task> act = () => _service.UserhasGoalOrThrowAsync(userId, Guid.NewGuid());
 
             await act.Should().ThrowAsync<InvalidIdException>()
                 .Where(e => e.ClassName == nameof(GoalItem));

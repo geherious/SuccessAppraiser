@@ -3,7 +3,7 @@ using System;
 
 namespace BLL.UnitTests.Common
 {
-    public class TestObjects
+    public class GoalObjects
     {
         public static GoalTemplate getHabbitTemplate()
         {
