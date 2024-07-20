@@ -21,9 +21,9 @@ namespace SuccessAppraiser.BLL.Auth.Services
         {
             DateTime expires = DateTimeFactory(type);
 
-            var issuer = _configuration.GetSection("JWT:Issuer").Value;
-            var audience = _configuration.GetSection("JWT:Audience").Value;
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration.GetSection("JWT:Key").Value));
+            var issuer = _configuration.GetRequiredSection("JWT:Issuer").Value;
+            var audience = _configuration.GetRequiredSection("JWT:Audience").Value;
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration.GetRequiredSection("JWT:Key").Value!));
 
             var cred = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
 
@@ -49,10 +49,10 @@ namespace SuccessAppraiser.BLL.Auth.Services
             switch (tokenType)
             {
                 case TokenType.AccessToken:
-                    int minutes = int.Parse(_configuration.GetSection("JWT:AccessTokenMinutes").Value);
+                    int minutes = int.Parse(_configuration.GetRequiredSection("JWT:AccessTokenMinutes").Value!);
                     return DateTime.UtcNow.AddMinutes(minutes);
                 case TokenType.RefreshToken:
-                    int days = int.Parse(_configuration.GetSection("JWT:RefreshTokenDays").Value);
+                    int days = int.Parse(_configuration.GetRequiredSection("JWT:RefreshTokenDays").Value!);
                     return DateTime.UtcNow.AddDays(days);
                 default:
                     return DateTime.UtcNow;
