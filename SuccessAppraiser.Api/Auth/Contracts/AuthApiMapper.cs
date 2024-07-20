@@ -8,6 +8,7 @@ namespace SuccessAppraiser.Api.Auth.Contracts
         public AuthApiMapper()
         {
             CreateMap<RegisterDto, RegisterCommand>().ReverseMap();
+            CreateMap<LoginQuerry, LoginDto>().ReverseMap();
         }
     }
 }

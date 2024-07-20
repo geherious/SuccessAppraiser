@@ -1,13 +1,12 @@
 ﻿using SuccessAppraiser.Api.Auth.Contracts;
 using AutoMapper;
 using SuccessAppraiser.Data.Enums;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using SuccessAppraiser.BLL.Auth.Contracts;
 using SuccessAppraiser.BLL.Auth.Services.Interfaces;
-using SuccessAppraiser.Data.Entities;
 using System.Security.Claims;
 using SuccessAppraiser.Api.Filters;
+using SuccessAppraiser.Data.Entities;
 
 namespace SuccessAppraiser.Api.Auth.Controllers
 {
@@ -16,18 +15,14 @@ namespace SuccessAppraiser.Api.Auth.Controllers
     [ValidationExceptionFilter]
     public class AuthController : ControllerBase
     {
-        private readonly UserManager<ApplicationUser> _userManager;
-        private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IAuthService _authService;
         private readonly IJwtService _jwtService;
         private readonly ITokenService _tokenService;
         private readonly IMapper _mapper;
 
-        public AuthController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager,
-            IAuthService authService, IJwtService jwtService, ITokenService tokenService, IMapper mapper)
+        public AuthController(IAuthService authService, IJwtService jwtService,
+            ITokenService tokenService, IMapper mapper)
         {
-            _userManager = userManager;
-            _signInManager = signInManager;
             _authService = authService;
             _jwtService = jwtService;
             _tokenService = tokenService;
@@ -55,21 +50,16 @@ namespace SuccessAppraiser.Api.Auth.Controllers
         [DtoValidationFilter]
         public async Task<IActionResult> Login([FromBody] LoginDto dto)
         {
-            var user = await _userManager.FindByEmailAsync(dto.Email);
+            LoginQuerry loginQuerry = _mapper.Map<LoginQuerry>(dto);
+
+            var user = await _authService.Login(loginQuerry);
 
             if (user == null)
             {
-                ModelState.AddModelError("Login", "User doesn't exist");
-                return Unauthorized(ModelState);
+                string message = "Invalid login credentials";
+                return Conflict(new {Message = message});
             }
 
-            var signInResult = await _signInManager.CheckPasswordSignInAsync(user, dto.Password, false);
-
-            if (!signInResult.Succeeded)
-            {
-                ModelState.AddModelError("Login", "Invalid login attempt");
-                return Unauthorized(ModelState);
-            }
             List<Claim> userClaims =
             [
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
@@ -78,18 +68,21 @@ namespace SuccessAppraiser.Api.Auth.Controllers
             string accessToken = _jwtService.GenerateToken(userClaims, TokenType.AccessToken);
             var refreshToken = await _tokenService.AddRefreshTokenAsync(user.Id);
 
+            AppendAuthCookies(Response.Cookies, accessToken, refreshToken);
 
-            Response.Cookies.Append("X-Refresh-Token", refreshToken.Token, new CookieOptions
+            return Ok(new { AccessToken = accessToken, Username = user.UserName });
+
+        }
+
+        private void AppendAuthCookies(IResponseCookies cookies, string accessToken, RefreshToken refreshToken)
+        {
+            cookies.Append("X-Refresh-Token", refreshToken.Token, new CookieOptions
             {
                 HttpOnly = true,
                 SameSite = SameSiteMode.None,
                 Secure = true,
                 Expires = refreshToken.Expires
             });
-
-
-            return Ok(new { AccessToken = accessToken, Username = user.UserName });
-
         }
 
         [HttpGet]
@@ -114,15 +107,9 @@ namespace SuccessAppraiser.Api.Auth.Controllers
 
             var accessToken = _jwtService.GenerateToken(userClaims, TokenType.AccessToken);
             var refreshToken = await _tokenService.AddRefreshTokenAsync(oldRefreshToken.UserId, ct);
-            await _tokenService.RemoveRefreshTokenAsync(token, ct);
+            await _tokenService.RemoveRefreshTokenAsync(oldRefreshToken, ct);
 
-            Response.Cookies.Append("X-Refresh-Token", refreshToken.Token, new CookieOptions
-            {
-                HttpOnly = true,
-                SameSite = SameSiteMode.None,
-                Secure = true,
-                Expires = refreshToken.Expires
-            });
+            AppendAuthCookies(Response.Cookies, accessToken, refreshToken);
 
             return Ok(new { AccessToken = accessToken, Username = refreshToken.User.UserName });
         }

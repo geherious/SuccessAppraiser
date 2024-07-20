@@ -10,10 +10,12 @@ namespace SuccessAppraiser.BLL.Auth.Services
     public class AuthService : IAuthService
     {
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly SignInManager<ApplicationUser> _signInManager;
 
-        public AuthService(UserManager<ApplicationUser> userManager)
+        public AuthService(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager)
         {
             _userManager = userManager;
+            _signInManager = signInManager;
         }
         public async Task RegisterAsync(RegisterCommand registerCommand)
         {
@@ -40,6 +42,25 @@ namespace SuccessAppraiser.BLL.Auth.Services
         {
             return await _userManager.FindByEmailAsync(registerCommand.Email) != null ||
                 await _userManager.FindByNameAsync(registerCommand.Username) != null;
+        }
+
+        public async Task<ApplicationUser?> Login(LoginQuerry loginQuerry)
+        {
+            var user = await _userManager.FindByEmailAsync(loginQuerry.Email);
+
+            if (user == null)
+            {
+                return null;
+            }
+
+            var signInResult = await _signInManager.CheckPasswordSignInAsync(user, loginQuerry.Password, false);
+
+            if (!signInResult.Succeeded)
+            {
+                return null;
+            }
+
+            return user;
         }
     }
 }
