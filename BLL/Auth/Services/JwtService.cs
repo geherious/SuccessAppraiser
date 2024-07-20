@@ -55,7 +55,7 @@ namespace SuccessAppraiser.BLL.Auth.Services
                     int days = int.Parse(_configuration.GetRequiredSection("JWT:RefreshTokenDays").Value!);
                     return DateTime.UtcNow.AddDays(days);
                 default:
-                    return DateTime.UtcNow;
+                    throw new ArgumentException($"{tokenType} is not supported");
             }
         }
 
