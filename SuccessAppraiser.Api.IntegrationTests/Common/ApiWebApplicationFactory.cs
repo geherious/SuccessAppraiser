@@ -1,23 +1,18 @@
-﻿using DotNet.Testcontainers.Builders;
-using DotNet.Testcontainers.Containers;
-using Microsoft.AspNetCore.Hosting;
+﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.DependencyInjection;
-using SuccessAppraiser;
 using SuccessAppraiser.Data.Context;
-using System;
 using Testcontainers.PostgreSql;
 
-namespace Api.IntegrationTests
+namespace SuccessAppraiser.Api.IntegrationTests.Common
 {
     public class ApiWebApplicationFactory : WebApplicationFactory<Program>, IAsyncLifetime
     {
         private readonly PostgreSqlContainer _dbContainer = new PostgreSqlBuilder()
             .WithImage("postgres:latest")
-            .WithDatabase("eshop")
+            .WithDatabase("success_appraiser")
             .WithUsername("postgres")
             .WithPassword("postgres")
             .Build();

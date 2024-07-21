@@ -57,7 +57,7 @@ namespace SuccessAppraiser.Api.Auth.Controllers
             if (user == null)
             {
                 string message = "Invalid login credentials";
-                return Conflict(new {Message = message});
+                return Unauthorized(new {Message = message});
             }
 
             List<Claim> userClaims =
@@ -69,8 +69,9 @@ namespace SuccessAppraiser.Api.Auth.Controllers
             var refreshToken = await _tokenService.AddRefreshTokenAsync(user.Id);
 
             AppendAuthCookies(Response.Cookies, accessToken, refreshToken);
+            AuthDto response = new(accessToken, user.UserName!);
 
-            return Ok(new { AccessToken = accessToken, Username = user.UserName });
+            return Ok(response);
 
         }
 
@@ -110,8 +111,9 @@ namespace SuccessAppraiser.Api.Auth.Controllers
             await _tokenService.RemoveRefreshTokenAsync(oldRefreshToken, ct);
 
             AppendAuthCookies(Response.Cookies, accessToken, refreshToken);
+            AuthDto response = new(accessToken, refreshToken.User.UserName);
 
-            return Ok(new { AccessToken = accessToken, Username = refreshToken.User.UserName });
+            return Ok(response);
         }
 
         [HttpGet]
