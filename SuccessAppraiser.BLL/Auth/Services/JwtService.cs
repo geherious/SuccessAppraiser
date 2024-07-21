@@ -27,6 +27,8 @@ namespace SuccessAppraiser.BLL.Auth.Services
 
             var cred = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
 
+            claims = claims.Append(new Claim("RandomFactor", Guid.NewGuid().ToString()));
+
             var token = new JwtSecurityToken(
                 issuer: issuer,
                 audience: audience,

@@ -8,7 +8,6 @@ using SuccessAppraiser.Data.Entities;
 using System.Net.Http.Json;
 using System.Net;
 using System.Net.Http.Headers;
-using Microsoft.Net.Http.Headers;
 
 namespace SuccessAppraiser.Api.IntegrationTests.Auth
 {
@@ -19,14 +18,17 @@ namespace SuccessAppraiser.Api.IntegrationTests.Auth
         public AuthControllerTest(ApiWebApplicationFactory webFactory) : base(webFactory)
         {
             _userManager = _scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+            Task.Run(RegisterBaseUser).Wait();
         }
 
-        private async Task RegisterBaseUser()
+        private async Task<bool> RegisterBaseUser()
         {
             ApplicationUser user = AuthTestObjects.getBaseUser();
             string password = "Password123";
 
             await _userManager.CreateAsync(user, password);
+
+            return true;
         }
 
 
@@ -56,7 +58,7 @@ namespace SuccessAppraiser.Api.IntegrationTests.Auth
         [Fact]
         public async Task Login_ShouldBeOk()
         {
-            await RegisterBaseUser();
+            //await RegisterBaseUser();
             var user = AuthTestObjects.getBaseUser();
             LoginDto dto = new LoginDto(user.Email!, "Password123");
 
@@ -72,7 +74,7 @@ namespace SuccessAppraiser.Api.IntegrationTests.Auth
         [Fact]
         public async Task Login_ShouldBeUnauthorized_WhenCredentialsWrong()
         {
-            await RegisterBaseUser();
+            //await RegisterBaseUser();
             LoginDto dto = new LoginDto("wrong@mail.ru", "Password123");
 
             var response = await _httpClient.PostAsJsonAsync("auth/login", dto);
@@ -103,7 +105,7 @@ namespace SuccessAppraiser.Api.IntegrationTests.Auth
         [Fact]
         public async Task Refresh_ShouldBeOk()
         {
-            await RegisterBaseUser();
+            //await RegisterBaseUser();
             var user = AuthTestObjects.getBaseUser();
             LoginDto dto = new LoginDto(user.Email!, "Password123");
             var loginResponse = await _httpClient.PostAsJsonAsync("auth/login", dto);
