@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { getDateOnlyString } from '../../Services/Calendar/calendarService';
 import useHomeStore from '../../Store/useHomeStore';
-import { postGoalDate } from '../../api/goalApi';
+import { goalDateEndpoint } from '../../api/goalApi';
 import LoaderDots from '../Loaders/LoaderDots';
 import ModalBase from '../ModalBase/ModalBase';
 import './DateModal.css';
@@ -56,7 +56,7 @@ const DateModal = () => {
       return;
     }
     try {
-      await axiosPrivate.post(postGoalDate, JSON.stringify(newData));
+      await axiosPrivate.post(goalDateEndpoint(activeGoal.id), JSON.stringify(newData));
       delete newData.goalId;
       mutate(date, newData);
       setIsActive(false);

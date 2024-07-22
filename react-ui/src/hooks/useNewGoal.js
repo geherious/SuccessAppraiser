@@ -1,6 +1,6 @@
 import useSWR from "swr";
 import useAxiosPrivate from "./useAxiosPrivate";
-import { getGoalDateByMonth, goalsUrlEndpoint } from "../api/goalApi";
+import { goalsUrlEndpoint } from "../api/goalApi";
 import useHomeStore from "../Store/useHomeStore";
 import { useEffect, useMemo } from "react";
 
