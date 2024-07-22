@@ -6,8 +6,7 @@ namespace SuccessAppraiser.Api.Goal.Contracts.Validation
     {
         public GetGoalDatesByMonthValidator()
         {
-            RuleFor(x => x.GoalId).NotEmpty();
-            RuleFor(x => x.Date).NotEmpty();
+            RuleFor(x => x.DateOfMonth).NotEmpty();
         }
     }
 }

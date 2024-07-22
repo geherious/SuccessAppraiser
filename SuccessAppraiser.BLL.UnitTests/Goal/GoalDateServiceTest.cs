@@ -54,7 +54,8 @@ namespace SuccessAppraiser.BLL.UnitTests.Goal
         {
             DayState easy = GoalObjects.GetEasyDayState();
             GoalItem goal = GoalObjects.getHabbitGoal();
-            CreateGoalDateCommand command = new CreateGoalDateCommand(date, "Comment", easy.Id, goal.Id);
+            CreateGoalDateCommand command = new CreateGoalDateCommand(date, "Comment", easy.Id);
+            command.GoalId = goal.Id;
 
             GoalDate newDate = await _service.CreateGoalDateAsync(command);
 
@@ -70,7 +71,8 @@ namespace SuccessAppraiser.BLL.UnitTests.Goal
             DayState easy = GoalObjects.GetEasyDayState();
             GoalItem goal = GoalObjects.getHabbitGoal();
             DateOnly date = new DateOnly(2024, 06, 13);
-            CreateGoalDateCommand command = new CreateGoalDateCommand(date, "Comment", easy.Id, Guid.NewGuid());
+            CreateGoalDateCommand command = new CreateGoalDateCommand(date, "Comment", easy.Id);
+            command.GoalId = Guid.NewGuid();
 
             Func<Task> act = () => _service.CreateGoalDateAsync(command);
 
@@ -84,7 +86,8 @@ namespace SuccessAppraiser.BLL.UnitTests.Goal
         {
             DayState easy = GoalObjects.GetEasyDayState();
             GoalItem goal = GoalObjects.getHabbitGoal();
-            CreateGoalDateCommand command = new CreateGoalDateCommand(date, "Comment", easy.Id, goal.Id);
+            CreateGoalDateCommand command = new CreateGoalDateCommand(date, "Comment", easy.Id);
+            command.GoalId = goal.Id;
 
             Func<Task> act = () => _service.CreateGoalDateAsync(command);
 
@@ -103,7 +106,8 @@ namespace SuccessAppraiser.BLL.UnitTests.Goal
 
             DayState easy = GoalObjects.GetEasyDayState();
             DateOnly date = DateOnly.FromDateTime(DateTime.Now).AddDays(2);
-            CreateGoalDateCommand command = new CreateGoalDateCommand(date, "Comment", easy.Id, goal.Id);
+            CreateGoalDateCommand command = new CreateGoalDateCommand(date, "Comment", easy.Id);
+            command.GoalId = goal.Id;
 
             Func<Task> act = () => _service.CreateGoalDateAsync(command);
 

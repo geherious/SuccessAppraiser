@@ -34,6 +34,7 @@ namespace SuccessAppraiser.Api.IntegrationTests.Common
                     options
                         .UseNpgsql(_dbContainer.GetConnectionString());
                 });
+
             });
         }
 

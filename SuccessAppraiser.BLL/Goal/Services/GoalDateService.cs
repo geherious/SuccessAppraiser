@@ -86,8 +86,8 @@ namespace SuccessAppraiser.BLL.Goal.Services
 
             var dates = await _dbContext.GoalDates.Where(d =>
             d.GoalId == getQuerry.GoalId
-            && d.Date.Month == getQuerry.Date.Month
-            && d.Date.Year == getQuerry.Date.Year)
+            && d.Date.Month == getQuerry.DateOfMonth.Month
+            && d.Date.Year == getQuerry.DateOfMonth.Year)
             .ToListAsync(ct);
 
             return dates;

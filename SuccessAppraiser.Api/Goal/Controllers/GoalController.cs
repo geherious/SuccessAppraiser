@@ -28,7 +28,7 @@ namespace SuccessAppraiser.Controllers.Goal
 
         [HttpGet]
         [Route("goals")]
-        public async Task<IActionResult> Goals(CancellationToken ct)
+        public async Task<IActionResult> GetGoals(CancellationToken ct)
         {
             Guid userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
 
@@ -40,7 +40,7 @@ namespace SuccessAppraiser.Controllers.Goal
         [HttpPost]
         [DtoValidationFilter]
         [Route("goals")]
-        public async Task<IActionResult> Goals([FromBody] CreateGoalDto goalDto, CancellationToken ct)
+        public async Task<IActionResult> CreateGoal([FromBody] CreateGoalDto goalDto, CancellationToken ct)
         {
             Guid userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
 
@@ -55,14 +55,16 @@ namespace SuccessAppraiser.Controllers.Goal
 
         [HttpPost]
         [DtoValidationFilter]
-        [Route("dates")]
-        public async Task<IActionResult> GoalDate([FromBody] CreateGoalDateDto goalDateDto, CancellationToken ct)
+        [Route("goals/{goalId:guid}/dates")]
+        public async Task<IActionResult> CreateGoalDate([FromBody] CreateGoalDateDto goalDateDto,
+            [FromRoute] Guid goalId, CancellationToken ct)
         {
             Guid userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
 
-            await _goalService.UserhasGoalOrThrowAsync(userId, goalDateDto.GoalId, ct);
+            await _goalService.UserhasGoalOrThrowAsync(userId, goalId, ct);
 
             var command = _mapper.Map<CreateGoalDateCommand>(goalDateDto);
+            command.GoalId = goalId;
 
             GoalDate newGoalDate = await _goalDateService.CreateGoalDateAsync(command, ct);
 
@@ -73,14 +75,16 @@ namespace SuccessAppraiser.Controllers.Goal
 
         [HttpGet]
         [DtoValidationFilter]
-        [Route("dates")]
-        public async Task<IActionResult> GetGoalDates([FromQuery] GetGoalDatesByMonthDto dto, CancellationToken ct)
+        [Route("goals/{goalId:guid}/dates")]
+        public async Task<IActionResult> GetGoalDates([FromQuery] GetGoalDatesByMonthDto dto,
+            [FromRoute] Guid goalId, CancellationToken ct)
         {
             Guid userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
 
-            await _goalService.UserhasGoalOrThrowAsync(userId, dto.GoalId, ct);
+            await _goalService.UserhasGoalOrThrowAsync(userId, goalId, ct);
 
             var command = _mapper.Map<GetGoalDatesByMonthQuerry>(dto);
+            command.GoalId = goalId;
 
             var dates = await _goalDateService.GetGoalDatesByMonthAsync(command, ct);
 

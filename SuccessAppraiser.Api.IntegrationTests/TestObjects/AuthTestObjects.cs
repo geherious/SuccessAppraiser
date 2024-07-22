@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
-using SuccessAppraiser.Data.Entities;
-using System;
+﻿using SuccessAppraiser.Data.Entities;
 
 namespace SuccessAppraiser.Api.IntegrationTests.TestObjects
 {

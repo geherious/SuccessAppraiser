@@ -1,36 +1,18 @@
 using FluentAssertions;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.DependencyInjection;
 using SuccessAppraiser.Api.Auth.Contracts;
 using SuccessAppraiser.Api.IntegrationTests.Common;
 using SuccessAppraiser.Api.IntegrationTests.TestObjects;
-using SuccessAppraiser.Data.Entities;
-using System.Net.Http.Json;
 using System.Net;
 using System.Net.Http.Headers;
+using System.Net.Http.Json;
 
 namespace SuccessAppraiser.Api.IntegrationTests.Auth
 {
     public class AuthControllerTest : BaseIntegrationTest
     {
-        private readonly UserManager<ApplicationUser> _userManager;
-
         public AuthControllerTest(ApiWebApplicationFactory webFactory) : base(webFactory)
         {
-            _userManager = _scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
-            Task.Run(RegisterBaseUser).Wait();
         }
-
-        private async Task<bool> RegisterBaseUser()
-        {
-            ApplicationUser user = AuthTestObjects.getBaseUser();
-            string password = "Password123";
-
-            await _userManager.CreateAsync(user, password);
-
-            return true;
-        }
-
 
         [Fact]
         public async Task Register_ShouldBeOk()

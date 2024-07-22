@@ -56,7 +56,7 @@ namespace SuccessAppraiser.Api.Auth.Controllers
 
             if (user == null)
             {
-                string message = "Invalid login credentials";
+                string message = "Invalid login credentials.";
                 return Unauthorized(new {Message = message});
             }
 
