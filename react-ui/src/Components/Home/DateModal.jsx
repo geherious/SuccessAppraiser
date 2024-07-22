@@ -40,9 +40,11 @@ const DateModal = () => {
       }
       else{
         setExistingDate(null);
+        setComment("");
+        setStatus(activeGoal.template.states[0].id);
       }
     }
-  }, [date])
+  }, [date, isActive])
 
   const submitForm = async (e) => {
     e.preventDefault();
@@ -69,7 +71,6 @@ const DateModal = () => {
   }
 
   const onClose = () => {
-    setComment('');
     setIsActive(false);
   }
 
