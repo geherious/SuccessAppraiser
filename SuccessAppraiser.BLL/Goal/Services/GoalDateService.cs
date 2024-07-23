@@ -92,5 +92,38 @@ namespace SuccessAppraiser.BLL.Goal.Services
 
             return dates;
         }
+
+        public async Task<GoalDate> UpdateGoaldateAsync(UpdateGoalDateCoomand updateCommand, CancellationToken ct = default)
+        {
+            GoalItem? goal = await _dbContext.GoalItems
+                .Include(x => x.Dates
+                    .Where(x => false))
+                .Include(x => x.Template)
+                .ThenInclude(x => x.States)
+                .Where(x => x.Id == updateCommand.GoalId)
+                .FirstOrDefaultAsync();
+
+            if (goal == null)
+            {
+                throw new InvalidIdException(nameof(GoalItem), updateCommand.GoalId);
+            }
+
+            var goalDate = goal.Dates.FirstOrDefault();
+
+            if (goalDate == null)
+            {
+                throw new InvalidDateException(updateCommand.Date);
+            }
+            if (!goal.Template!.States.Any(s => s.Id == updateCommand.StateId))
+            {
+                throw new InvalidIdException(nameof(DayState), updateCommand.StateId);
+            }
+
+            goalDate.Comment = updateCommand.Comment;
+            goalDate.StateId = updateCommand.StateId;
+            await _dbContext.SaveChangesAsync();
+
+            return goalDate;
+        }
     }
 }

@@ -29,7 +29,7 @@ namespace SuccessAppraiser.BLL.UnitTests.Goal
         [Fact]
         public async Task CreateGoalAsync_ShouldReturnNewGoal_WhenTemplateExists()
         {
-            GoalTemplate template = GoalObjects.getHabbitTemplate();
+            GoalTemplate template = GoalObjects.GetHabbitTemplate();
             CreateGoalCommand command = new CreateGoalCommand(
                 "Name", "Description", 12, new DateOnly(2024, 10, 12), template.Id);
             Guid userGuid = Guid.NewGuid();
@@ -55,7 +55,7 @@ namespace SuccessAppraiser.BLL.UnitTests.Goal
         [Fact]
         public async Task CreateGoalAsync_ShouldThrow_WhenTemplateDoesNotExist()
         {
-            GoalTemplate template = GoalObjects.getHabbitTemplate();
+            GoalTemplate template = GoalObjects.GetHabbitTemplate();
             CreateGoalCommand command = new CreateGoalCommand(
                 "Name", "Description", 12, new DateOnly(2024, 10, 12), template.Id);
             Guid userGuid = Guid.NewGuid();
@@ -71,7 +71,7 @@ namespace SuccessAppraiser.BLL.UnitTests.Goal
         [Fact]
         public async Task DeleteGoalAsync_ShouldDelete_WhenGoalExists()
         {
-            GoalItem goal = GoalObjects.getHabbitGoal();
+            GoalItem goal = GoalObjects.GetHabbitGoal();
             _dbContext.GoalItems.FindAsync(goal.Id, Arg.Any<CancellationToken>()).Returns(goal);
 
             await _service.DeleteGoalAsync(goal.Id);
@@ -85,7 +85,7 @@ namespace SuccessAppraiser.BLL.UnitTests.Goal
         [Fact]
         public async Task DeleteGoalAsync_ShouldThrow_WhenGoalDoesNotExist()
         {
-            GoalItem goal = GoalObjects.getHabbitGoal();
+            GoalItem goal = GoalObjects.GetHabbitGoal();
             _dbContext.GoalItems.FindAsync(goal.Id, Arg.Any<CancellationToken>()).ReturnsNull();
 
             Func<Task> act = () => _service.DeleteGoalAsync(goal.Id);
@@ -98,7 +98,7 @@ namespace SuccessAppraiser.BLL.UnitTests.Goal
         [Fact]
         public async Task UserHasGoalAsync_ShouldBeOk_WhenGoalExists()
         {
-            GoalItem goal = GoalObjects.getHabbitGoal();
+            GoalItem goal = GoalObjects.GetHabbitGoal();
             Guid userId = Guid.Parse("cffaea27-8a8f-471d-aa12-39913ffbbda3");
             BuildGoalMock(goal);
 
@@ -119,7 +119,7 @@ namespace SuccessAppraiser.BLL.UnitTests.Goal
         [Fact]
         public async Task UserHasGoalAsync_ShouldThrow_WhenGoalDoesNotExist()
         {
-            GoalItem goal = GoalObjects.getHabbitGoal();
+            GoalItem goal = GoalObjects.GetHabbitGoal();
             Guid userId = Guid.Parse("cffaea27-8a8f-471d-aa12-39913ffbbda3");
             BuildGoalMock(goal);
 

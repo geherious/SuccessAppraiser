@@ -4,7 +4,7 @@ namespace SuccessAppraiser.BLL.UnitTests.Common
 {
     public class GoalObjects
     {
-        public static GoalTemplate getHabbitTemplate()
+        public static GoalTemplate GetHabbitTemplate()
         {
             GoalTemplate template = new GoalTemplate();
             template.Name = "Habbit";
@@ -44,7 +44,7 @@ namespace SuccessAppraiser.BLL.UnitTests.Common
             return hard;
         }
 
-        public static GoalItem getHabbitGoal()
+        public static GoalItem GetHabbitGoal()
         {
             GoalItem item = new GoalItem();
             item.Id = Guid.Parse("86ddc570-a18d-4535-908f-132b485c2a42");
@@ -55,24 +55,24 @@ namespace SuccessAppraiser.BLL.UnitTests.Common
             item.DateStart = new DateOnly(2024, 06, 12);
             item.UserId = Guid.Parse("cffaea27-8a8f-471d-aa12-39913ffbbda3");
 
-            var template = getHabbitTemplate();
+            var template = GetHabbitTemplate();
             item.Template = template;
             item.TemplateId = template.Id;
 
-            GoalDate date = getHabbitDate11();
+            GoalDate date = GetHabbitDate11();
             date.Goal = item;
             date.GoalId = item.Id;
 
-            item.Dates.Add(getHabbitDate11());
+            item.Dates.Add(date);
 
             return item;
         }
 
-        public static GoalDate getHabbitDate11()
+        public static GoalDate GetHabbitDate11()
         {
             GoalDate date = new GoalDate();
             date.Id = Guid.Parse("7648b821-6102-4420-8a46-751150b545d3");
-            date.Date = new DateOnly(2024, 11, 11);
+            date.Date = new DateOnly(2024, 06, 13);
             date.Comment = "Comment";
             date.State = GetAverageDayState();
             date.StateId = GetAverageDayState().Id;

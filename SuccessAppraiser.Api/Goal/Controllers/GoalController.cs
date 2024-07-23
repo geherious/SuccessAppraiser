@@ -91,5 +91,22 @@ namespace SuccessAppraiser.Controllers.Goal
             var result = _mapper.Map<List<GetGoalDateDto>>(dates);
             return Ok(result);
         }
+
+        [HttpPut]
+        [Route("goals/{goalId:guid}/dates")]
+        public async Task<IActionResult> UpdateGoalDate([FromBody] UpdateGoalDateDto dto,
+            [FromRoute] Guid goalId, CancellationToken ct)
+        {
+            Guid userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+
+            await _goalService.UserhasGoalOrThrowAsync(userId, goalId, ct);
+
+            var command = _mapper.Map<UpdateGoalDateCoomand>(dto);
+            command.GoalId = goalId;
+            var goalDate = await _goalDateService.UpdateGoaldateAsync(command, ct);
+
+            var result = _mapper.Map<GetGoalDateDto>(goalDate);
+            return Ok(result);
+        }
     }
 }

@@ -10,5 +10,16 @@ namespace SuccessAppraiser.BLL.Goal.Exceptions
         {
             
         }
+
+        public InvalidDateException(DateOnly date) : base(GetErrorMessage(date),
+            new[] { new ValidationFailure("Date", GetErrorMessage(date)) })
+        {
+
+        }
+
+        private static string GetErrorMessage(DateOnly date)
+        {
+            return $"Provided date {date} doesn't exist.";
+        }
     }
 }

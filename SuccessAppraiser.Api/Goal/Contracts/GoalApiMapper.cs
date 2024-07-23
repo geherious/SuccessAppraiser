@@ -14,6 +14,7 @@ namespace SuccessAppraiser.Api.Goal.Contracts
             CreateMap<GetGoalDatesByMonthDto, GetGoalDatesByMonthQuerry>().ReverseMap();
             CreateMap<GoalDate, GetGoalDateDto>().ReverseMap();
             CreateMap<GoalTemplate, GetTemplateDto>().ReverseMap();
+            CreateMap<UpdateGoalDateDto, UpdateGoalDateCoomand>().ReverseMap();
         }
     }
 }
