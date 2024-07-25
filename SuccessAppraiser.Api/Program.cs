@@ -8,6 +8,7 @@ using SuccessAppraiser.Data.Context;
 using SuccessAppraiser.Data.Seeding;
 using SuccessAppraiser.Data.Entities;
 using SuccessAppraiser.BLL;
+using SuccessAppraiser.Data.Repositories.DependencyInjection;
 
 
 
@@ -90,6 +91,7 @@ namespace SuccessAppraiser
 
             builder.Services.AddValidatorsFromAssemblies(AppDomain.CurrentDomain.GetAssemblies());
 
+            builder.Services.AddRepositories();
             builder.Services.AddProjectServices();
 
             builder.Services.AddCors(options =>

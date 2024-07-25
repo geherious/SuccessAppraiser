@@ -8,29 +8,39 @@ using FluentValidation;
 using FluentValidation.Results;
 using SuccessAppraiser.BLL.Common.Exceptions.Validation;
 using SuccessAppraiser.BLL.Goal.Exceptions;
+using SuccessAppraiser.Data.Repositories.Interfaces;
+using SuccessAppraiser.Data.Repositories.Base;
 
 namespace SuccessAppraiser.BLL.Goal.Services
 {
     public class GoalDateService : IGoalDateService
     {
-        private readonly ApplicationDbContext _dbContext;
+        private readonly IGoalDateRepository _goalDateRepository;
+        private readonly IGoalRepository _goalRepository;
+        private readonly IGoalTemplateRepotitory _goalTemplateRepotitory;
+        private readonly IRepositoryWrapper _repositoryWrapper;
         private readonly IMapper _mapper;
 
-        public GoalDateService(ApplicationDbContext dbContext, IMapper mapper)
+        public GoalDateService(IGoalDateRepository goalDateRepository, IGoalRepository goalRepository,
+            IGoalTemplateRepotitory goalTemplateRepotitory, IRepositoryWrapper repositoryWrapper, IMapper mapper)
         {
-            _dbContext = dbContext;
+            _goalDateRepository = goalDateRepository;
+            _goalRepository = goalRepository;
+            _goalTemplateRepotitory = goalTemplateRepotitory;
+            _repositoryWrapper = repositoryWrapper;
             _mapper = mapper;
         }
         public async Task<GoalDate> CreateGoalDateAsync(CreateGoalDateCommand createCommand, CancellationToken ct = default)
         {
-            var goal = await _dbContext.GoalItems.Where(g => g.Id == createCommand.GoalId).Include(g => g.Dates).Include(g => g.Template).ThenInclude(g => g.States).FirstOrDefaultAsync();
-
+            GoalItem? goal = await _goalRepository.GetByIdAsync(createCommand.GoalId, ct);
             if (goal == null)
             {
                 throw new InvalidIdException(nameof(GoalItem), createCommand.GoalId);
             }
 
-            ValidateDate(goal, createCommand.Date);
+            IEnumerable<GoalDate> dates = await _goalDateRepository.FindAsync(x => x.GoalId == createCommand.GoalId, ct);
+
+            ValidateDate(goal, dates, createCommand.Date);
 
             if (!goal.Template!.States.Any(s => s.Id == createCommand.StateId))
             {
@@ -39,13 +49,13 @@ namespace SuccessAppraiser.BLL.Goal.Services
 
             var newGoalDate = _mapper.Map<GoalDate>(createCommand);
 
-            await _dbContext.GoalDates.AddAsync(newGoalDate, ct);
-            await _dbContext.SaveChangesAsync(ct);
+            await _goalDateRepository.AddAsync(newGoalDate, ct);
+            await _repositoryWrapper.SaveChangesAsync(ct);
 
             return newGoalDate;
         }
 
-        private void ValidateDate(GoalItem goal, DateOnly date)
+        private void ValidateDate(GoalItem goal, IEnumerable<GoalDate> dates, DateOnly date)
         {
             var datesFailures = new List<ValidationFailure>(capacity: 2);
             DateOnly now = DateOnly.FromDateTime(DateTime.UtcNow);
@@ -62,7 +72,7 @@ namespace SuccessAppraiser.BLL.Goal.Services
                 datesFailures.Add(new ValidationFailure("Date", message));
             }
 
-            if (goal.Dates.Any(d => d.Date == date))
+            if (dates.Any(d => d.Date == date))
             {
                 var message = $"Provided date {date} already exists";
                 datesFailures.Add(new ValidationFailure("Date", message));
@@ -77,51 +87,46 @@ namespace SuccessAppraiser.BLL.Goal.Services
 
         public async Task<IEnumerable<GoalDate>> GetGoalDatesByMonthAsync(GetGoalDatesByMonthQuerry getQuerry, CancellationToken ct = default)
         {
-            var goal = await _dbContext.GoalItems.Where(g => g.Id == getQuerry.GoalId).FirstOrDefaultAsync();
+            var goal = await _goalRepository.GetByIdAsync(getQuerry.GoalId, ct);
 
             if (goal == null)
             {
                 throw new InvalidIdException(nameof(GoalItem), getQuerry.GoalId);
             }
 
-            var dates = await _dbContext.GoalDates.Where(d =>
+            IEnumerable<GoalDate> dates = await _goalDateRepository.FindAsync(d =>
             d.GoalId == getQuerry.GoalId
             && d.Date.Month == getQuerry.DateOfMonth.Month
-            && d.Date.Year == getQuerry.DateOfMonth.Year)
-            .ToListAsync(ct);
+            && d.Date.Year == getQuerry.DateOfMonth.Year);
 
             return dates;
         }
 
         public async Task<GoalDate> UpdateGoaldateAsync(UpdateGoalDateCoomand updateCommand, CancellationToken ct = default)
         {
-            GoalItem? goal = await _dbContext.GoalItems
-                .Include(x => x.Dates
-                    .Where(x => false))
-                .Include(x => x.Template)
-                .ThenInclude(x => x.States)
-                .Where(x => x.Id == updateCommand.GoalId)
-                .FirstOrDefaultAsync();
+            GoalItem? goal = await _goalRepository.GetByIdAsync(updateCommand.GoalId, ct);
 
             if (goal == null)
             {
                 throw new InvalidIdException(nameof(GoalItem), updateCommand.GoalId);
-            }
-
-            var goalDate = goal.Dates.FirstOrDefault();
-
-            if (goalDate == null)
-            {
-                throw new InvalidDateException(updateCommand.Date);
             }
             if (!goal.Template!.States.Any(s => s.Id == updateCommand.StateId))
             {
                 throw new InvalidIdException(nameof(DayState), updateCommand.StateId);
             }
 
+            IEnumerable<GoalDate> goalDates = await _goalDateRepository
+                .FindAsync(d => d.GoalId == updateCommand.GoalId && d.Date == updateCommand.Date, ct);
+            GoalDate? goalDate = goalDates.FirstOrDefault();
+
+            if (goalDate == null)
+            {
+                throw new InvalidDateException(updateCommand.Date);
+            }
+
             goalDate.Comment = updateCommand.Comment;
             goalDate.StateId = updateCommand.StateId;
-            await _dbContext.SaveChangesAsync();
+            await _repositoryWrapper.SaveChangesAsync(ct);
 
             return goalDate;
         }
