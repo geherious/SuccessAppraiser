@@ -3,8 +3,6 @@ using Microsoft.Extensions.DependencyInjection;
 using SuccessAppraiser.Api.IntegrationTests.TestObjects;
 using SuccessAppraiser.Data.Context;
 using SuccessAppraiser.Data.Entities;
-using System.Net.Http.Headers;
-using System.Security.Claims;
 
 namespace SuccessAppraiser.Api.IntegrationTests.Common
 {

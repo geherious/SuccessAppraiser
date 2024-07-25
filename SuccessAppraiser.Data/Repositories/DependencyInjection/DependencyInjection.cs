@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using SuccessAppraiser.Data.Repositories.Base;
 using SuccessAppraiser.Data.Repositories.Interfaces;
-using System;
 
 namespace SuccessAppraiser.Data.Repositories.DependencyInjection
 {

@@ -40,7 +40,6 @@ namespace SuccessAppraiser.Api.IntegrationTests.Auth
         [Fact]
         public async Task Login_ShouldBeOk()
         {
-            //await RegisterBaseUser();
             var user = AuthTestObjects.getBaseUser();
             LoginDto dto = new LoginDto(user.Email!, "Password123");
 
@@ -56,7 +55,6 @@ namespace SuccessAppraiser.Api.IntegrationTests.Auth
         [Fact]
         public async Task Login_ShouldBeUnauthorized_WhenCredentialsWrong()
         {
-            //await RegisterBaseUser();
             LoginDto dto = new LoginDto("wrong@mail.ru", "Password123");
 
             var response = await _httpClient.PostAsJsonAsync("auth/login", dto);
@@ -87,7 +85,6 @@ namespace SuccessAppraiser.Api.IntegrationTests.Auth
         [Fact]
         public async Task Refresh_ShouldBeOk()
         {
-            //await RegisterBaseUser();
             var user = AuthTestObjects.getBaseUser();
             LoginDto dto = new LoginDto(user.Email!, "Password123");
             var loginResponse = await _httpClient.PostAsJsonAsync("auth/login", dto);

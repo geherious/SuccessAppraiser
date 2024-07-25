@@ -1,12 +1,10 @@
 ﻿using AutoMapper;
+using SuccessAppraiser.BLL.Common.Exceptions.Validation;
 using SuccessAppraiser.BLL.Goal.Contracts;
 using SuccessAppraiser.BLL.Goal.Services.Interfaces;
-using Microsoft.EntityFrameworkCore;
 using SuccessAppraiser.Data.Entities;
-using FluentValidation;
-using SuccessAppraiser.BLL.Common.Exceptions.Validation;
-using SuccessAppraiser.Data.Repositories.Interfaces;
 using SuccessAppraiser.Data.Repositories.Base;
+using SuccessAppraiser.Data.Repositories.Interfaces;
 
 namespace SuccessAppraiser.BLL.Goal.Services
 {

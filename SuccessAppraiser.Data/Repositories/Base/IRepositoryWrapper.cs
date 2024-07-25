@@ -1,6 +1,4 @@
-﻿using SuccessAppraiser.Data.Repositories.Interfaces;
-
-namespace SuccessAppraiser.Data.Repositories.Base
+﻿namespace SuccessAppraiser.Data.Repositories.Base
 {
     public interface IRepositoryWrapper
     {

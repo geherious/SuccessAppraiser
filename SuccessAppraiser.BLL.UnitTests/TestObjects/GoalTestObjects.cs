@@ -2,7 +2,7 @@
 
 namespace SuccessAppraiser.BLL.UnitTests.Common
 {
-    public class GoalObjects
+    public class GoalTestObjects
     {
         public static GoalTemplate GetHabbitTemplate()
         {

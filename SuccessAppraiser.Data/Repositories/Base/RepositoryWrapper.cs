@@ -1,6 +1,4 @@
 ﻿using SuccessAppraiser.Data.Context;
-using SuccessAppraiser.Data.Repositories.Interfaces;
-using System;
 
 namespace SuccessAppraiser.Data.Repositories.Base
 {

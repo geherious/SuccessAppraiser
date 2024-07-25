@@ -1,5 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using SuccessAppraiser.Data.Context;
+﻿using SuccessAppraiser.Data.Context;
 using SuccessAppraiser.Data.Entities;
 using SuccessAppraiser.Data.Repositories.Base;
 using SuccessAppraiser.Data.Repositories.Interfaces;

@@ -86,9 +86,6 @@ namespace SuccessAppraiser.Api.IntegrationTests.Goal
         [Fact]
         public async Task CreateGoal_ShouldBeBad_WhenTemplateDoesNotExist()
         {
-            var template = GoalTestObjects.GetABTemplate();
-            await _dbContext.GoalTemplates.AddAsync(template);
-            await _dbContext.SaveChangesAsync();
             DateOnly start = DateOnly.FromDateTime(DateTime.Now.AddDays(-1));
             CreateGoalDto dto = new CreateGoalDto("Goal", "Description", 12, start, Guid.NewGuid());
 
@@ -114,7 +111,7 @@ namespace SuccessAppraiser.Api.IntegrationTests.Goal
             await _dbContext.SaveChangesAsync();
             var goalDate = GoalTestObjects.GetGoalDate();
             goalDate.GoalId = goal.Id;
-            goalDate.StateId = goal.Template.States.First().Id;
+            goalDate.StateId = goal.Template!.States.First().Id;
             await _dbContext.GoalDates.AddAsync(goalDate);
             await _dbContext.SaveChangesAsync();
 
@@ -144,7 +141,7 @@ namespace SuccessAppraiser.Api.IntegrationTests.Goal
             await _dbContext.SaveChangesAsync();
             var goalDate = GoalTestObjects.GetGoalDate();
             goalDate.GoalId = goal.Id;
-            goalDate.StateId = goal.Template.States.First().Id;
+            goalDate.StateId = goal.Template!.States.First().Id;
             await _dbContext.GoalDates.AddAsync(goalDate);
             await _dbContext.SaveChangesAsync();
 
@@ -170,6 +167,7 @@ namespace SuccessAppraiser.Api.IntegrationTests.Goal
 
             response.EnsureSuccessStatusCode();
             var data = await response.Content.ReadFromJsonAsync<GetGoalDateDto>();
+            data.Should().NotBeNull();
             data!.Date.Should().Be(date);
             data.Comment.Should().Be("Comment");
             data.StateId.Should().NotBeEmpty();
@@ -183,7 +181,7 @@ namespace SuccessAppraiser.Api.IntegrationTests.Goal
             await _dbContext.GoalItems.AddAsync(goal);
             await _dbContext.SaveChangesAsync();
             DateOnly date = new DateOnly(2024, 1, 4);
-            CreateGoalDateDto dto = new CreateGoalDateDto(date, "Comment", goal.Template.States.First().Id);
+            CreateGoalDateDto dto = new CreateGoalDateDto(date, "Comment", goal.Template!.States.First().Id);
 
             var response = await _httpClient.PostAsJsonAsync($"/goals/{Guid.NewGuid()}/dates", dto);
 
