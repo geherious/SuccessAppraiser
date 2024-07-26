@@ -3,12 +3,14 @@ import { create } from "zustand";
 const useHomeStore = create((set) => ({
   activeGoal: null,
   currentDateArea: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
-  modalIsActive: false,
-  modalDate: new Date(),
+  dateModalIsActive: false,
+  dateModalDate: new Date(),
   setActiveGoal: (goal) => set({ activeGoal: goal }),
   setCurrentDateArea: (dateArea) => set({ currentDateArea: dateArea }),
-  setModalDate: (date) => set({ modalDate: date }),
-  setModalIsActive: (isActive) => set({ modalIsActive: isActive }),
+  setDateModalDate: (date) => set({ dateModalDate: date }),
+  setDateModalIsActive: (isActive) => set({ dateModalIsActive: isActive }),
+  goalModalIsActive: false,
+  setGoalModalIsActive: (isActive) => set({ goalModalIsActive: isActive }),
 }));
 
 export default useHomeStore;

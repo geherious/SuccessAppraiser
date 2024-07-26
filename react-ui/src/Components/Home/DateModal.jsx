@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { getDateOnlyString } from '../../Services/Calendar/calendarService';
 import useHomeStore from '../../Store/useHomeStore';
-import { postGoalDate } from '../../api/goalApi';
+import { goalDateEndpoint } from '../../api/goalApi';
 import LoaderDots from '../Loaders/LoaderDots';
 import ModalBase from '../ModalBase/ModalBase';
 import './DateModal.css';
@@ -15,11 +15,14 @@ const DateModal = () => {
   const activeGoal = useHomeStore(state => state.activeGoal);
   const [status, setStatus] = useState('');
   const [comment, setComment] = useState('');
+  const [existingDate, setExistingDate] = useState(null);
 
-  const isActive = useHomeStore(state => state.modalIsActive);
-  const setIsActive = useHomeStore(state => state.setModalIsActive);
-  const date = useHomeStore(state => state.modalDate);
-  const { mutate } = useDates();
+  const isActive = useHomeStore(state => state.dateModalIsActive);
+  const setIsActive = useHomeStore(state => state.setDateModalIsActive);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const date = useHomeStore(state => state.dateModalDate);
+  const { dates, mutate } = useDates();
 
   const axiosPrivate = useAxiosPrivate();
 
@@ -29,19 +32,43 @@ const DateModal = () => {
     }
   }, [activeGoal])
 
-  const submitForm = async (e) => {
-    e.preventDefault();
-    const newData = { date: getDateOnlyString(date), comment: comment, stateId: status, goalId: activeGoal.id }
-    try {
-      await axiosPrivate.post(postGoalDate, JSON.stringify(newData));
-      delete newData.goalId;
-      mutate(date, newData);
-      setIsActive(false);
-    } catch (error) {
-      console.log(error);
-      setIsActive(false);
-      toast.error('Something went wrong');
+  useEffect(() => {
+    if (dates){
+      let savedDate = dates.find(d => d.date === getDateOnlyString(date));
+      if (savedDate){
+        setExistingDate(savedDate);
+        setStatus(savedDate.stateId);
+        setComment(savedDate.comment);
+      }
+      else{
+        setExistingDate(null);
+        setComment("");
+        setStatus(activeGoal.template.states[0].id);
+      }
+    }
+  }, [date, isActive])
 
+  const submitForm = async (e) => {
+    setIsLoading(true);
+    e.preventDefault();
+    const newData = { date: getDateOnlyString(date), comment: comment, stateId: status}
+    try{
+      if (existingDate){
+        await axiosPrivate.put(goalDateEndpoint(activeGoal.id), JSON.stringify(newData));
+      }
+      else{
+        await axiosPrivate.post(goalDateEndpoint(activeGoal.id), JSON.stringify(newData));
+      }
+      mutate(date, newData);
+    }
+    catch (error) {
+      console.log(error);
+      toast.error('Something went wrong');
+      return;
+    }
+    finally{
+      setIsLoading(false);
+      setIsActive(false);
     }
   }
 
@@ -65,11 +92,8 @@ const DateModal = () => {
           </div>
 
           <div className="date-modal-footer">
-            <button type="submit">Save</button>
+            <button type="submit" disabled={isLoading}>Save</button>
             <button type="button" onClick={() => setIsActive(false)}>Cancel</button>
-          </div>
-          <div className='date-modal-footer'>
-
           </div>
         </form>
         ) :

@@ -1,6 +1,6 @@
 import useSWR from "swr";
 import useAxiosPrivate from "./useAxiosPrivate";
-import { getGoalDateByMonth, goalsUrlEndpoint } from "../api/goalApi";
+import { goalsUrlEndpoint } from "../api/goalApi";
 import useHomeStore from "../Store/useHomeStore";
 import { useEffect, useMemo } from "react";
 
@@ -11,7 +11,8 @@ const useNewGoal = () => {
 
   const {
     data: goals,
-    isLoading: IsLoadingGoals
+    isLoading: IsLoadingGoals,
+    mutate: mutateGoals
   } = useSWR(goalsUrlEndpoint, axiosPrivate.get, { revalidateOnFocus: false });
 
   useEffect(() => {
@@ -22,7 +23,8 @@ const useNewGoal = () => {
 
   return {
     goals: goals?.data,
-    IsLoadingGoals
+    IsLoadingGoals,
+    mutateGoals
   }
 };
 

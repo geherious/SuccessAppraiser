@@ -1,6 +1,6 @@
 import useSWR from "swr";
 import useHomeStore from "../Store/useHomeStore";
-import { getGoalDateByMonth } from "../api/goalApi";
+import { goalDateEndpoint } from "../api/goalApi";
 import useAxiosPrivate from "./useAxiosPrivate";
 import { useCallback, useMemo } from "react";
 import { compareDateOnly } from "../Services/Calendar/calendarService";
@@ -12,11 +12,11 @@ const useDates = () => {
   const getKeyWithArgs = (date) => {
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, '0');
-    return { url: getGoalDateByMonth + activeGoal?.id + year + month, year, month };
+    return { url: goalDateEndpoint + activeGoal?.id + year + month, year, month };
   }
 
   const getParams = (year, month) => {
-    return { date: `${year}-${month}-01`, goalId: activeGoal.id };
+    return { dateOfMonth: `${year}-${month}-01` };
   };
 
   const currentDateArea = useHomeStore(state => state.currentDateArea);
@@ -27,13 +27,13 @@ const useDates = () => {
   const fetchSettings = { revalidateOnFocus: false, revalidateIfStale: false, shouldRetryOnError: false };
 
   const { data: lastMonthDates, mutate: mutateLastMonth, isLoading: lastMonthIsLoading } = useSWR(shouldFetch ? getKeyWithArgs(lastMonth) : null,
-    (args) => axiosPrivate.get(getGoalDateByMonth, { params: getParams(args.year, args.month) }).then(res => res.data), fetchSettings);
+    (args) => axiosPrivate.get(goalDateEndpoint(activeGoal.id), { params: getParams(args.year, args.month) }).then(res => res.data), fetchSettings);
 
   const { data: currentMonthDates, mutate: mutateCurrentMonth, isLoading: currentMonthIsLoading } = useSWR(shouldFetch ? getKeyWithArgs(currentDateArea) : null,
-    (args) => axiosPrivate.get(getGoalDateByMonth, { params: getParams(args.year, args.month) }).then(res => res.data), fetchSettings);
+    (args) => axiosPrivate.get(goalDateEndpoint(activeGoal.id), { params: getParams(args.year, args.month) }).then(res => res.data), fetchSettings);
 
   const { data: nextMonthDates, mutate: mutateNextMonth, isLoading: nextMonthIsLoading } = useSWR(shouldFetch ? getKeyWithArgs(nextMonth) : null,
-    (args) => axiosPrivate.get(getGoalDateByMonth, { params: getParams(args.year, args.month) }).then(res => res.data), fetchSettings);
+    (args) => axiosPrivate.get(goalDateEndpoint(activeGoal.id), { params: getParams(args.year, args.month) }).then(res => res.data), fetchSettings);
 
   const dates = useMemo(() => {
     if (lastMonthDates && currentMonthDates && nextMonthDates) {
@@ -49,7 +49,6 @@ const useDates = () => {
   }, [lastMonthDates, currentMonthDates, nextMonthDates]);
 
   function insertNewDate(array, newObject) {
-    console.log(array)
     let index = array.findIndex(element => {
       return compareDateOnly(element.date, newObject.date) > 0;
     });
@@ -58,7 +57,6 @@ const useDates = () => {
     } else {
       array.splice(index, 0, newObject);
     }
-    console.log(array)
     return array;
   }
 

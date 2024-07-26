@@ -36,3 +36,27 @@
     transform: scale(1);
     pointer-events: all;
 }
+
+.base-modal-header {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.2rem;
+}
+
+.base-modal-body {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 10px;
+}
+
+.base-modal-footer {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+}
+.base-modal-footer > * {
+  margin-right: 5px;
+}
