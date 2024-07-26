@@ -4,6 +4,7 @@ import DateModal from './DateModal';
 import './Home.css';
 import SideBar from "./SideBar";
 import UpBar from './UpBar';
+import GoalModal from './GoalModal';
 
 
 const Home = () => {
@@ -23,6 +24,7 @@ const Home = () => {
         </div>
       </div>
       <DateModal/>
+      <GoalModal/>
     </div>
   )
 }

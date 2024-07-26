@@ -49,6 +49,7 @@
   overflow: hidden;
   overflow-wrap: break-word;
   padding: 0 6px;
+  border-bottom: #c7c6c6 dashed 1px;
 }
 .active-goal {
   background-color: #FC8937;

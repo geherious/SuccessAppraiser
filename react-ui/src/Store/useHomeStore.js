@@ -9,6 +9,8 @@ const useHomeStore = create((set) => ({
   setCurrentDateArea: (dateArea) => set({ currentDateArea: dateArea }),
   setDateModalDate: (date) => set({ dateModalDate: date }),
   setDateModalIsActive: (isActive) => set({ dateModalIsActive: isActive }),
+  goalModalIsActive: false,
+  setGoalModalIsActive: (isActive) => set({ goalModalIsActive: isActive }),
 }));
 
 export default useHomeStore;

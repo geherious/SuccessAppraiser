@@ -11,7 +11,8 @@ const useNewGoal = () => {
 
   const {
     data: goals,
-    isLoading: IsLoadingGoals
+    isLoading: IsLoadingGoals,
+    mutate: mutateGoals
   } = useSWR(goalsUrlEndpoint, axiosPrivate.get, { revalidateOnFocus: false });
 
   useEffect(() => {
@@ -22,7 +23,8 @@ const useNewGoal = () => {
 
   return {
     goals: goals?.data,
-    IsLoadingGoals
+    IsLoadingGoals,
+    mutateGoals
   }
 };
 
