@@ -4,7 +4,7 @@ import clsx from "clsx";
 const ModalBase = ({ isActive, setIsActive, onModalClose, children }) => {
 
   const onClose = () => {
-    onModalClose();
+    onModalClose ? onModalClose() : null;
     setIsActive(false);
   }
 

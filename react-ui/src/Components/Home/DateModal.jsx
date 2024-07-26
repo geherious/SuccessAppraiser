@@ -48,34 +48,27 @@ const DateModal = () => {
 
   const submitForm = async (e) => {
     e.preventDefault();
-    const newData = { date: getDateOnlyString(date), comment: comment, stateId: status, goalId: activeGoal.id }
-    if (existingDate){
-      console.log(existingDate);
-      return;
+    const newData = { date: getDateOnlyString(date), comment: comment, stateId: status}
+    try{
+      if (existingDate){
+        await axiosPrivate.put(goalDateEndpoint(activeGoal.id), JSON.stringify(newData));
+      }
+      else{
+        await axiosPrivate.post(goalDateEndpoint(activeGoal.id), JSON.stringify(newData));
+      }
     }
-    else {
-      console.log("asd");
-      return;
-    }
-    try {
-      await axiosPrivate.post(goalDateEndpoint(activeGoal.id), JSON.stringify(newData));
-      delete newData.goalId;
-      mutate(date, newData);
-      setIsActive(false);
-    } catch (error) {
+    catch (error) {
       console.log(error);
-      onClose();
+      setIsActive(false);
       toast.error('Something went wrong');
-
+      return;
     }
-  }
-
-  const onClose = () => {
+    mutate(date, newData);
     setIsActive(false);
   }
 
   return (
-    <ModalBase isActive={isActive} setIsActive={setIsActive} onModalClose={onClose}>
+    <ModalBase isActive={isActive} setIsActive={setIsActive}>
       {activeGoal ?
         (<form onSubmit={submitForm}>
           <div className='date-modal-header'>
@@ -95,7 +88,7 @@ const DateModal = () => {
 
           <div className="date-modal-footer">
             <button type="submit">Save</button>
-            <button type="button" onClick={onClose}>Cancel</button>
+            <button type="button" onClick={() => setIsActive(false)}>Cancel</button>
           </div>
           <div className='date-modal-footer'>
 

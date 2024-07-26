@@ -1,3 +1,4 @@
+import { useRef } from 'react';
 import CalendarBody from '../Calendar/CalendarBody';
 import DateModal from './DateModal';
 import './Home.css';
@@ -7,12 +8,14 @@ import UpBar from './UpBar';
 
 const Home = () => {
 
+  const sideBarRefCol = useRef(null);
+
   return (
 
     <div className='container-fluid home'>
-      <UpBar />
+      <UpBar sideBarRefCol={sideBarRefCol}/>
       <div className='row no-gutters content flex-grow-1 overflow-hidden'>
-        <div className='col-lg-2 h-100 d-flex p-0'>
+        <div className='col-lg-2 h-100 d-flex p-0 hidden' ref={sideBarRefCol}>
           <SideBar />
         </div>
         <div className='col d-flex p-0'>
