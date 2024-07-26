@@ -17,9 +17,9 @@ const DateModal = () => {
   const [comment, setComment] = useState('');
   const [existingDate, setExistingDate] = useState(null);
 
-  const isActive = useHomeStore(state => state.modalIsActive);
-  const setIsActive = useHomeStore(state => state.setModalIsActive);
-  const date = useHomeStore(state => state.modalDate);
+  const isActive = useHomeStore(state => state.dateModalIsActive);
+  const setIsActive = useHomeStore(state => state.setDateModalIsActive);
+  const date = useHomeStore(state => state.dateModalDate);
   const { dates, mutate } = useDates();
 
   const axiosPrivate = useAxiosPrivate();

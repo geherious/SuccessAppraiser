@@ -3,9 +3,8 @@ import './Cell.css';
 
 
 const Cell = ({ date, dateState, cellNumber }) => {
-  const activeGoal = useHomeStore(state => state.activeGoal);
-  const setModalIsActive = useHomeStore(state => state.setModalIsActive);
-  const setModalDate = useHomeStore(state => state.setModalDate);
+  const setModalIsActive = useHomeStore(state => state.setDateModalIsActive);
+  const setModalDate = useHomeStore(state => state.setDateModalDate);
 
   const weekDaysNames = ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'];
   const statelessColor = '#ADADAD';
