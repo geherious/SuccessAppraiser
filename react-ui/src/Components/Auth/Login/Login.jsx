@@ -1,6 +1,6 @@
 import './Login.css';
 import { useEffect, useRef, useState } from "react";
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation, Navigate } from 'react-router-dom'
 import authStore from '../../../Store/authStore';
 import { instance } from '../../../api/axios';
 
@@ -8,6 +8,7 @@ const LOGIN_URL = '/auth/login';
 
 const Login = () => {
   const setAuth = authStore(state => state.setAuth);
+  const auth = authStore(state => state.auth);
   const persist = authStore(state => state.persist);
   const setPersist = authStore(state => state.setPersist);
 
@@ -22,10 +23,6 @@ const Login = () => {
   const [pwd, setPwd] = useState('');
   const [errMsg, setErrMsg] = useState('');
   const [pending, setPending] = useState(false);
-
-  useEffect(() => {
-    emailRef.current.focus();
-  }, []);
 
   useEffect(() => {
     setErrMsg('')
@@ -74,6 +71,8 @@ const Login = () => {
   }, [persist])
 
   return (
+    <>
+    {auth.username ? <Navigate to="/home" state={{ from: location }} replace /> : (
     <section className='loginsection d-flex flex-column'>
       <p ref={errRef} className={errMsg ? "errmsg" : "hide"}>{errMsg}</p>
       <h1>Sign In</h1>
@@ -120,10 +119,11 @@ const Login = () => {
       <p>
         Need an Account?<br />
         <span className="line">
-          <a href="#">Sign Up</a>
+          <a href="/register">Sign Up</a>
         </span>
       </p>
-    </section>
+    </section>)}
+    </>
   )
 }
 

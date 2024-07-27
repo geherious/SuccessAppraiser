@@ -1,6 +1,8 @@
 import './Register.css'
 import { useState, useEffect, useRef } from "react";
 import { instance } from '../../../api/axios';
+import authStore from '../../../Store/authStore';
+import { Navigate } from 'react-router-dom';
 
 const USERNAME_REGEX = /^[a-zA-z][a-zA-z0-9-_]{2,}$/;
 const PASSWORD_REGEX = /^(?=.*?\d)(?=.*?[a-zA-Z])[a-zA-Z\d-]{6,}$/;
@@ -30,9 +32,8 @@ const Register = () => {
   const [errMsg, setErrMsg] = useState('');
   const [success, setSuccess] = useState(false);
 
-  useEffect(() => {
-    userRef.current.focus();
-  }, [])
+  const auth = authStore(state => state.auth);
+
 
   useEffect(() => {
     const result = USERNAME_REGEX.test(user);
@@ -89,11 +90,12 @@ const Register = () => {
 
   return (
     <>
-      {success ? (
+    {auth.username ? <Navigate to="/home" /> : 
+      success ? (
         <section>
           <h1>Success</h1>
           <p>
-            <a href='#'>Sign In</a>
+            <a href='/login'>Sign In</a>
           </p>
         </section>
       ) : (
@@ -184,7 +186,7 @@ const Register = () => {
 
           <div className='alreadyLoggedIn'>
             Already registered? <br />
-            <a href="#">Sign in</a>
+            <a href="/login">Sign in</a>
           </div>
         </section>
       )}
