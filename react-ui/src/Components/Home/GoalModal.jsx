@@ -54,7 +54,7 @@ const GoalModal = () => {
     
     const newData = {
       name: name, description: description, daysNumber: numberOfDays,
-      dateStart: startDate, templateId: '1896477c-94ea-4b04-b523-75b382328e88'
+      dateStart: startDate, templateId: templateId
     }
     try {
       const response = await axiosPrivate.post(goalsUrlEndpoint, JSON.stringify(newData));
