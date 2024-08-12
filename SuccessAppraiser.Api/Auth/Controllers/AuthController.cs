@@ -121,14 +121,14 @@ namespace SuccessAppraiser.Api.Auth.Controllers
         {
             if (!Request.Cookies.ContainsKey("X-Refresh-Token"))
             {
-                return Forbid("No refresh token");
+                return Unauthorized("No refresh token");
             }
 
             string token = Request.Cookies["X-Refresh-Token"]!;
             var oldRefreshToken = await _tokenService.GetValidTokenEntityAsync(token);
             if (oldRefreshToken == null)
             {
-                return Forbid("Bad refresh token");
+                return Unauthorized("Bad refresh token");
             }
 
             await _tokenService.RemoveRefreshTokenAsync(oldRefreshToken);

@@ -1,6 +1,5 @@
 import React from 'react'
-import { Link, useLocation, Navigate } from 'react-router-dom'
-import useAuth from '../../hooks/useAuth'
+import { useLocation, Navigate } from 'react-router-dom'
 import authStore from '../../Store/authStore';
 
 const Welcome = () => {

@@ -5,6 +5,9 @@
 .logo-span {
     padding: 0 6px;
     font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .side-button-container {
@@ -17,7 +20,7 @@
 .side-button {
   height: clamp(32px, 3vw, 5vw);
   width: clamp(32px, 3vw, 5vw);
-  background-color: #9bc991 ;
+  background-color: #77adfc ;
   border: none;
   display: inline-flex;
   align-items: center;
@@ -28,4 +31,34 @@
 .side-icon {
   height: 80%;
   filter: invert(100%) sepia(100%) saturate(1%) hue-rotate(84deg) brightness(111%) contrast(101%);
+}
+
+.log-out-button-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px;
+  margin-left: auto;
+}
+
+.log-out-button {
+  height: clamp(32px, 3vw, 5vw);
+  width: clamp(32px, 3vw, 5vw);
+  background-color: red ;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.log-out-icon {
+  height: 80%;
+  filter: invert(100%) sepia(100%) saturate(1%) hue-rotate(84deg) brightness(111%) contrast(101%);
+}
+
+.log-out-text {
+  padding: 0;
+  margin: 0;
+  background-color: transparent;
 }

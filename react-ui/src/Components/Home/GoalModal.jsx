@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import useHomeStore from '../../Store/useHomeStore';
 import ModalBase from '../ModalBase/ModalBase';
-import './DateModal.css';
+import './GoalModal.css';
 import 'react-toastify/dist/ReactToastify.css';
 import useAxiosPrivate from '../../hooks/useAxiosPrivate';
 import { getDateOnlyString } from '../../Services/Calendar/calendarService';
