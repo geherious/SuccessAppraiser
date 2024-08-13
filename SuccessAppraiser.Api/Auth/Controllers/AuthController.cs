@@ -7,6 +7,7 @@ using SuccessAppraiser.BLL.Auth.Services.Interfaces;
 using System.Security.Claims;
 using SuccessAppraiser.Api.Filters;
 using SuccessAppraiser.Data.Entities;
+using NSubstitute;
 
 namespace SuccessAppraiser.Api.Auth.Controllers
 {
@@ -132,6 +133,13 @@ namespace SuccessAppraiser.Api.Auth.Controllers
             }
 
             await _tokenService.RemoveRefreshTokenAsync(oldRefreshToken);
+
+            Response.Cookies.Delete("X-Refresh-Token", new CookieOptions
+            {
+                HttpOnly = true,
+                SameSite = SameSiteMode.None,
+                Secure = true
+            });
 
             return Ok();
         }
