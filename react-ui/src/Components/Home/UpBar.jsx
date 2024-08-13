@@ -29,7 +29,7 @@ const UpBar = ({sideBarRefCol}) => {
     <div className='row no-gutters'>
       <div className='col-lg-2 d-none d-lg-flex p-0'>
         <span className='logo-span'>
-          Suap?
+          S'APP
         </span>
       </div>
       <div className='col p-0 d-flex'>

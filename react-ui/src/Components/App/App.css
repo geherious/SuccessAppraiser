@@ -6,10 +6,8 @@
 
 html, body, #root {
 
-  min-width: 320px;
-  min-height: 480px;
-  height: 100vh;
-  width: 100%;
+  min-width: 100%;
+  min-height: 100%;
   font-size: 3vh;
   display: flex;
   
@@ -18,20 +16,18 @@ html, body, #root {
 .App {
   display: flex;
   flex-direction: column;
+  flex-grow: 1;
 
   align-items: center;
-  height: 100%;
-  width: 100%;
+
+  min-width: 100%;
+  min-height: 100%;
+
+  --big-text-size: 1.2rem;
+  --primary-color: #FFF5E9;
+  --secondary-color: #FC8937;
 }
 
 .hide {
   display: none;
-}
-
-.valid {
-  color: limegreen;
-}
-
-.invalid {
-  color: red;
 }

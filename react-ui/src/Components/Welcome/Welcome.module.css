@@ -1,0 +1,92 @@
+.welcome {
+  background-color: #FFF5E9;
+  width: 100%;
+  display: flex;
+  flex-grow: 1;
+}
+
+.header {
+  display: flex;
+  width: 100%;
+}
+
+.logo_span {
+  font-size: var(--big-text-size);
+  padding: 0;
+}
+
+.account {
+  flex-grow: 1;
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  justify-items: center;
+  justify-content: end;
+  gap: 1vw;
+}
+
+.account * {
+  padding: 0;
+  background-color: transparent;
+}
+
+.welcome_text {
+  text-align: center;
+  font-size: 2rem;
+  padding-top: 4vw;
+  font-weight: 700;
+  line-height: 90%;
+}
+
+.highlight {
+  color: var(--secondary-color);
+}
+
+.ruler_image {
+  display: inline;
+  height: 1em;
+}
+
+.features {
+  margin-top: 2vw;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 10px;
+}
+
+
+.features * {
+  border-radius: 5px;
+  font-size: var(--big-text-size);
+  display: flex;
+}
+
+.features div span {
+  text-align: center;
+  margin: auto 0;
+  overflow-wrap: anywhere;
+}
+
+.features div img {
+  width: 35%;
+}
+
+.features div:nth-child(3n + 1) {
+  background-color: #bde0fe;
+}
+
+.features div:nth-child(3n + 2) {
+  background-color: #ffc8dd;
+}
+
+.features div:nth-child(3n + 3) {
+  background-color: #cdb4db;
+}
+
+.footer {
+  flex: 0 0 auto;
+  text-align: center;
+  font-size: var(--big-text-size);
+  font-weight: 200;
+  padding-bottom: 2vh;
+}
