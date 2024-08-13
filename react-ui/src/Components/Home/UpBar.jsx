@@ -2,9 +2,6 @@ import CalendarControl from '../Calendar/CalendarControl';
 import './UpBar.css';
 import sideBarImage from '../../assets/images/home/hamburger-sidebar.svg';
 import exitImage from '../../assets/images/home/exit-icon.svg';
-import authStore from '../../Store/authStore';
-import useAxiosPrivate from '../../hooks/useAxiosPrivate';
-import { useLocation, useNavigate } from 'react-router-dom';
 import useAuth from '../../hooks/useAuth';
 const UpBar = ({sideBarRefCol}) => {
 
