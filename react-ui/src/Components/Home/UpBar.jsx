@@ -5,11 +5,10 @@ import exitImage from '../../assets/images/home/exit-icon.svg';
 import authStore from '../../Store/authStore';
 import useAxiosPrivate from '../../hooks/useAxiosPrivate';
 import { useLocation, useNavigate } from 'react-router-dom';
+import useAuth from '../../hooks/useAuth';
 const UpBar = ({sideBarRefCol}) => {
 
-  const setAuth = authStore(state => state.setAuth);
-  const axiosPrivate = useAxiosPrivate();
-  const navigate = useNavigate();
+  const logout = useAuth();
 
   const toggleSideBar = () => {
     if (sideBarRefCol.current.classList.contains('hidden')) {
@@ -18,11 +17,6 @@ const UpBar = ({sideBarRefCol}) => {
     else {
       sideBarRefCol.current.classList.add('hidden');
     }
-  }
-
-  const exit = async () => {
-    await axiosPrivate.get('auth/logout');
-    setAuth({logout: true});
   }
 
   return (
@@ -40,10 +34,10 @@ const UpBar = ({sideBarRefCol}) => {
         </div>
         <CalendarControl />
         <div className='log-out-button-container'>
-          <button onClick={exit} type='button' className='log-out-button d-lg-none'>
+          <button onClick={logout} type='button' className='log-out-button d-lg-none'>
             <img src={exitImage} alt='Exit' className='log-out-icon' />
           </button>
-          <button onClick={exit} type='button' className='log-out-text d-none d-lg-flex'>Log out</button>
+          <button onClick={logout} type='button' className='log-out-text d-none d-lg-flex'>Log out</button>
         </div>
       </div>
     </div>
