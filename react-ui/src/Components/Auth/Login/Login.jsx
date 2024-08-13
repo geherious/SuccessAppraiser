@@ -63,7 +63,7 @@ const Login = () => {
   }
 
   const togglePersist = () => {
-    setPersist(prev => !prev)
+    setPersist(!persist)
   }
 
   useEffect(() => {
