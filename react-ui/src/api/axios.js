@@ -1,8 +1,7 @@
 import axios from "axios";
 
 const apiPath = import.meta.env.VITE_BASE_PATH;
-// const baseUrl = `http://${apiPath}`;
-const baseUrl = "/api";
+const baseUrl = `http://${apiPath}`;
 
 export const instance = axios.create({
   baseURL: baseUrl,
