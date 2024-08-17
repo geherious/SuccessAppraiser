@@ -1,11 +1,10 @@
 import authStore from '../Store/authStore';
+import { refreshEndpoint } from '../api/authApi';
 import { instance } from '../api/axios';
-
-const refreshUrl = 'auth/refresh'
 
 const useRefreshToken = () => {
   const refresh = async () => {
-    const token = await instance.get(refreshUrl).then((response) => {
+    const token = await instance.get(refreshEndpoint).then((response) => {
       authStore.setState({ auth: response.data });
       return response.data.accessToken
     }).catch((error) => {

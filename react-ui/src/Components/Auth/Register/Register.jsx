@@ -3,11 +3,11 @@ import { useState, useEffect, useRef } from "react";
 import { instance } from '../../../api/axios';
 import authStore from '../../../Store/authStore';
 import { Navigate } from 'react-router-dom';
+import { registerEndpoint } from '../../../api/authApi';
 
 const USERNAME_REGEX = /^[a-zA-z][a-zA-z0-9-_]{2,}$/;
 const PASSWORD_REGEX = /^(?=.*?\d)(?=.*?[a-zA-Z])[a-zA-Z\d-]{6,}$/;
 const EMAIL_REGEX = /^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
-const REGISTER_URL = "/auth/register";
 
 const Register = () => {
   const userRef = useRef();
@@ -65,7 +65,7 @@ const Register = () => {
     }
 
     try {
-      const response = await instance.post(REGISTER_URL,
+      const response = await instance.post(registerEndpoint,
         JSON.stringify({ username: user, email, password: pwd }),
         {
           headers: { 'Content-Type': 'application/json' },

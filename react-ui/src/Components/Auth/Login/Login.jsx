@@ -3,8 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate, useLocation, Navigate } from 'react-router-dom'
 import authStore from '../../../Store/authStore';
 import { instance } from '../../../api/axios';
-
-const LOGIN_URL = '/auth/login';
+import { loginEndpoint } from '../../../api/authApi';
 
 const Login = () => {
   const setAuth = authStore(state => state.setAuth);
@@ -33,7 +32,7 @@ const Login = () => {
     setPending(true);
 
     try {
-      const response = await instance.post(LOGIN_URL,
+      const response = await instance.post(loginEndpoint,
         JSON.stringify({ email: email, password: pwd }),
         {
           headers: { 'Content-Type': 'application/json' },
