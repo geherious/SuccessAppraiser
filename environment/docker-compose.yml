@@ -1,0 +1,51 @@
+services:
+  backend:
+    image: ${DOCKER_REGISTRY-}success-appraiser-backend:latest
+    build:
+      context: ../server
+      dockerfile: SuccessAppraiser.Api/Dockerfile
+    ports:
+    - "8080:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Release
+      - ASPNETCORE_HTTP_PORTS=8080
+    depends_on:
+      database:
+        condition: service_healthy
+  react:
+    image: ${DOCKER_REGISTRY-}success-appraiser-client:latest
+    build:
+      context: ../react-ui
+    ports:
+    - "3000:3000"
+    volumes:
+    - ./react_nginx.conf:/etc/nginx/nginx.conf
+  proxy:
+    image: nginx:1.27.0-alpine
+    ports:
+    - "80:80"
+    volumes:
+    - ./proxy_nginx.conf:/etc/nginx/nginx.conf
+    depends_on:
+    - backend
+    - react
+  database:
+    image: postgres:16
+    environment:
+    - POSTGRES_DB=success_appraiser
+    - POSTGRES_USER=postgres
+    - POSTGRES_PASSWORD=postgres
+    volumes:
+    - ./database/success_appraiser/data:/var/lib/postgresql/data
+    - ./database/success_appraiser/sql:/docker-entrypoint-initdb.d
+    ports:
+    - 5432:5432
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+networks:
+  default:
+    driver: bridge

@@ -1,12 +1,15 @@
 import axios from "axios";
 
+const apiPath = import.meta.env.VITE_BASE_PATH;
+const baseUrl = `http://${apiPath}`;
+
 export const instance = axios.create({
-  baseURL: 'https://localhost:7127',
+  baseURL: baseUrl,
   withCredentials: true
 });
 
 export const axiosPrivateInstance = axios.create({
-  baseURL: 'https://localhost:7127',
+  baseURL: baseUrl,
   headers: { 'Content-Type': 'application/json' },
   withCredentials: true
 })
