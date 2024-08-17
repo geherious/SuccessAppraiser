@@ -110,7 +110,12 @@ namespace SuccessAppraiser
                                       .SetIsOriginAllowedToAllowWildcardSubdomains()
                                       .WithOrigins("http://localhost:8080",
                                                           "http://localhost:3000",
-                                                          "http://localhost")
+                                                          "http://localhost",
+                                                          "http://localhost:80",
+                                                          "http://91.247.36.46",
+                                                          "http://91.247.36.46:80",
+                                                          "http://91.247.36.46:3000",
+                                                          "http://91.247.36.46:8080")
                                       .AllowAnyHeader()
                                       .AllowAnyMethod()
                                       .AllowCredentials();
