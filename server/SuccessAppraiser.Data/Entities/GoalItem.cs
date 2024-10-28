@@ -23,7 +23,5 @@ namespace SuccessAppraiser.Data.Entities
         public Guid TemplateId { get; set; }
         [Required]
         public GoalTemplate? Template { get; set; }
-
-
     }
 }

@@ -5,7 +5,8 @@ using NSubstitute.ReturnsExtensions;
 using SuccessAppraiser.BLL.Common.Exceptions.Validation;
 using SuccessAppraiser.BLL.Goal.Contracts;
 using SuccessAppraiser.BLL.Goal.Services;
-using SuccessAppraiser.BLL.UnitTests.Common;
+using SuccessAppraiser.BLL.UnitTests.Fakers;
+using SuccessAppraiser.BLL.UnitTests.TestObjects;
 using SuccessAppraiser.Data.Entities;
 using SuccessAppraiser.Data.Repositories.Base;
 using SuccessAppraiser.Data.Repositories.Interfaces;
@@ -31,15 +32,23 @@ namespace SuccessAppraiser.BLL.UnitTests.Goal
         [Fact]
         public async Task CreateGoalAsync_ShouldReturnNewGoal_WhenTemplateExists()
         {
-            GoalTemplate template = GoalTestObjects.GetHabbitTemplate();
+            // arrange
+            GoalTemplate template = TemplateFaker.Generate(1)[0];
+
             CreateGoalCommand command = new CreateGoalCommand(
                 "Name", "Description", 12, new DateOnly(2024, 10, 12), template.Id);
+
             Guid userGuid = Guid.NewGuid();
             command.UserId = userGuid;
-            _goalTemplateRepotitory.GetByIdAsync(template.Id, Arg.Any<CancellationToken>()).Returns(template);
 
+            _goalTemplateRepotitory
+                .GetByIdAsync(template.Id, Arg.Any<CancellationToken>())
+                .Returns(template);
+
+            // act
             GoalItem goal = await _service.CreateGoalAsync(command);
 
+            // assert
             goal.Should().NotBeNull();
             goal.Name.Should().Be("Name");
             goal.Description.Should().Be("Description");
@@ -57,14 +66,20 @@ namespace SuccessAppraiser.BLL.UnitTests.Goal
         [Fact]
         public async Task CreateGoalAsync_ShouldThrow_WhenTemplateDoesNotExist()
         {
-            GoalTemplate template = GoalTestObjects.GetHabbitTemplate();
+            // arrange
+            GoalTemplate template = TemplateFaker.Generate(1)[0];
+
             CreateGoalCommand command = new CreateGoalCommand(
                 "Name", "Description", 12, new DateOnly(2024, 10, 12), template.Id);
+
             command.UserId = Guid.NewGuid();
+
             _goalTemplateRepotitory.GetByIdAsync(template.Id, Arg.Any<CancellationToken>()).ReturnsNull();
 
+            // act
             Func<Task> act = () => _service.CreateGoalAsync(command);
 
+            // assert
             await act.Should().ThrowAsync<InvalidIdException>()
                 .Where(e => e.ClassName == nameof(GoalTemplate));
         }
@@ -72,11 +87,14 @@ namespace SuccessAppraiser.BLL.UnitTests.Goal
         [Fact]
         public async Task DeleteGoalAsync_ShouldDelete_WhenGoalExists()
         {
-            GoalItem goal = GoalTestObjects.GetHabbitGoal();
+            // arrange
+            GoalItem goal = GoalFaker.Generate(1)[0];
             _goalRepository.GetByIdAsync(goal.Id, Arg.Any<CancellationToken>()).Returns(goal);
 
+            // act
             await _service.DeleteGoalAsync(goal.Id);
 
+            // assert
             _goalRepository.Received(1)
                 .Delete(goal);
             await _repositoryWrapper.Received(1)
@@ -86,11 +104,14 @@ namespace SuccessAppraiser.BLL.UnitTests.Goal
         [Fact]
         public async Task DeleteGoalAsync_ShouldThrow_WhenGoalDoesNotExist()
         {
-            GoalItem goal = GoalTestObjects.GetHabbitGoal();
+            // arrange
+            GoalItem goal = GoalFaker.Generate(1)[0];
             _goalRepository.GetByIdAsync(goal.Id, Arg.Any<CancellationToken>()).ReturnsNull();
 
+            // act
             Func<Task> act = () => _service.DeleteGoalAsync(goal.Id);
 
+            // assert
             await act.Should().ThrowAsync<InvalidIdException>()
                 .Where(e => e.ClassName == nameof(GoalItem));
 
@@ -99,25 +120,27 @@ namespace SuccessAppraiser.BLL.UnitTests.Goal
         [Fact]
         public async Task UserHasGoalAsync_ShouldBeOk_WhenGoalExists()
         {
-            GoalItem goal = GoalTestObjects.GetHabbitGoal();
-            Guid userId = Guid.Parse("cffaea27-8a8f-471d-aa12-39913ffbbda3");
-            _goalRepository.UserHasGoalAsync(userId, goal.Id, Arg.Any<CancellationToken>()).Returns(true);
+            // arrange
+            GoalItem goal = GoalFaker.Generate(1)[0];
+            _goalRepository.UserHasGoalAsync(goal.UserId, goal.Id, Arg.Any<CancellationToken>()).Returns(true);
 
-            await _service.UserhasGoalOrThrowAsync(userId, goal.Id);
+            // act
+            await _service.UserhasGoalOrThrowAsync(goal.UserId, goal.Id);
         }
 
         [Fact]
         public async Task UserHasGoalAsync_ShouldThrow_WhenGoalDoesNotExist()
         {
-            GoalItem goal = GoalTestObjects.GetHabbitGoal();
-            Guid userId = Guid.Parse("cffaea27-8a8f-471d-aa12-39913ffbbda3");
-            _goalRepository.UserHasGoalAsync(userId, goal.Id, Arg.Any<CancellationToken>()).Returns(false);
+            // arrange
+            GoalItem goal = GoalFaker.Generate(1)[0];
+            _goalRepository.UserHasGoalAsync(goal.UserId, goal.Id, Arg.Any<CancellationToken>()).Returns(false);
 
-            Func<Task> act = () => _service.UserhasGoalOrThrowAsync(userId, Guid.NewGuid());
+            // act
+            Func<Task> act = () => _service.UserhasGoalOrThrowAsync(goal.UserId, goal.Id);
 
+            // assert
             await act.Should().ThrowAsync<InvalidIdException>()
                 .Where(e => e.ClassName == nameof(GoalItem));
         }
     }
-
 }
