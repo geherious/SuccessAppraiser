@@ -1,4 +1,8 @@
-﻿namespace SuccessAppraiser.Api.Goal.Contracts
+﻿namespace SuccessAppraiser.Api.Goal.Contracts;
+
+public record CreateGoalDateDto
 {
-    public record CreateGoalDateDto(DateOnly Date, string? Comment, Guid StateId);
+    public required DateOnly Date { get; init; }
+    public string? Comment { get; init; }
+    public required Guid StateId { get; init; }
 }

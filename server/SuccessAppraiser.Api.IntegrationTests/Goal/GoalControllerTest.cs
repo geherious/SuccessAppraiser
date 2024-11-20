@@ -1,244 +1,266 @@
 ﻿using FluentAssertions;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using SuccessAppraiser.Api.Goal.Contracts;
 using SuccessAppraiser.Api.IntegrationTests.Common;
-using SuccessAppraiser.Api.IntegrationTests.TestObjects;
-using SuccessAppraiser.BLL.Auth.Services.Interfaces;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
-using System.Security.Claims;
 using System.Net;
+using SuccessAppraiser.Api.IntegrationTests.Fakers;
+using SuccessAppraiser.Data.Entities;
 
 namespace SuccessAppraiser.Api.IntegrationTests.Goal
 {
-    public class GoalControllerTest : BaseIntegrationTest, IDisposable
+    public class GoalControllerTest : BaseIntegrationTest
     {
-        private readonly IJwtService _jwtService;
-        private Guid _baseUserId;
+        private readonly GetRawTemplateDto _template;
         public GoalControllerTest(ApiWebApplicationFactory factory) : base(factory)
         {
-            _baseUserId = _dbContext.ApplicationUsers.First(x => x.UserName.Equals("BaseUser")).Id;
-            _jwtService = _scope.ServiceProvider.GetRequiredService<IJwtService>();
-            Claim[] userClaims =
-            [
-                new Claim(ClaimTypes.NameIdentifier, _baseUserId.ToString())
-            ];
-            var token = _jwtService.GenerateToken(userClaims, Data.Enums.TokenType.AccessToken);
+            Guid userId = CreateNewUser();
+            var token = GetTokenForNewUser(userId);
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-        }
 
-        public void Dispose()
-        {
-            Task.Run(async () => await _dbContext.GoalItems.ExecuteDeleteAsync()).Wait();
-            Task.Run(async () => await _dbContext.GoalTemplates.ExecuteDeleteAsync()).Wait();
-            Task.Run(async () => await _dbContext.GoalDates.ExecuteDeleteAsync()).Wait();
-            Task.Run(async () => await _dbContext.DayStates.ExecuteDeleteAsync()).Wait();
-        }
-
-        [Fact]
-        public async Task GetGoals_ShouldReturnOne()
-        {
-            var goal = GoalTestObjects.GetBaseGoal();
-            goal.UserId = _baseUserId;
-            await _dbContext.GoalItems.AddAsync(goal);
-            await _dbContext.SaveChangesAsync();
-
-            var response = await _httpClient.GetAsync("api/goals");
-
-            response.EnsureSuccessStatusCode();
-            var data = await response.Content.ReadFromJsonAsync<List<GetUserGoalDto>>();
-            data.Should().HaveCount(1);
-        }
-
-        [Fact]
-        public async Task GetGoals_ShouldReturnEmptyList()
-        {
-            var response = await _httpClient.GetAsync("api/goals");
-
-            response.EnsureSuccessStatusCode();
-            var data = await response.Content.ReadFromJsonAsync<List<GetUserGoalDto>>();
-            data.Should().HaveCount(0);
+            var templateDto = CreateTemplateDtoFaker.Generate();
+            var templateResponse = _httpClient.PostAsJsonAsync("api/templates", templateDto).GetAwaiter().GetResult();
+            _template = templateResponse.Content.ReadFromJsonAsync<GetRawTemplateDto>().GetAwaiter().GetResult()!;
         }
 
         [Fact]
         public async Task CreateGoal_ShouldReturnNewGoal()
         {
-            var template = GoalTestObjects.GetABTemplate();
-            await _dbContext.GoalTemplates.AddAsync(template);
-            await _dbContext.SaveChangesAsync();
-            DateOnly start = DateOnly.FromDateTime(DateTime.Now.AddDays(-1));
-            CreateGoalDto dto = new CreateGoalDto("Goal", "Description", 12, start, template.Id);
+            // arrange
+            CreateGoalDto dto = CreateGoalDtoFaker.Generate(_template.Id);
 
+            // act
             var response = await _httpClient.PostAsJsonAsync("api/goals", dto);
 
+            // assert
             response.EnsureSuccessStatusCode();
 
             var data = await response.Content.ReadFromJsonAsync<GetUserGoalDto>();
             data.Should().NotBeNull();
-            data!.Name.Should().Be("Goal");
-            data.Description.Should().Be("Description");
-            data.DaysNumber.Should().Be(12);
-            data.DateStart.Should().Be(start);
-            data.Template.Id.Should().Be(template.Id);
+            
+            data!.Name.Should().Be(dto.Name);
+            data.Description.Should().Be(dto.Description);
+            data.DaysNumber.Should().Be(dto.DaysNumber);
+            data.DateStart.Should().Be(dto.DateStart);
+            data.Template.Id.Should().Be(_template.Id);
+            data.Template.States.Should().HaveCountGreaterThan(0);
         }
 
         [Fact]
         public async Task CreateGoal_ShouldBeBad_WhenTemplateDoesNotExist()
         {
-            DateOnly start = DateOnly.FromDateTime(DateTime.Now.AddDays(-1));
-            CreateGoalDto dto = new CreateGoalDto("Goal", "Description", 12, start, Guid.NewGuid());
+            // arrange
+            CreateGoalDto dto = CreateGoalDtoFaker.Generate(Guid.NewGuid());
 
+            // act
             var response = await _httpClient.PostAsJsonAsync("api/goals", dto);
 
+            // assert
             response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
         }
 
-        public static IEnumerable<object[]> GetValidDatesOfMonth()
+        [Fact]
+        public async Task GetGoals_ShouldReturnOne()
         {
-            yield return new object[] { "2024-01-01" };
-            yield return new object[] { "2024-01-15" };
-            yield return new object[] { "2024-01-30" };
-        }
+            // arrange
+            CreateGoalDto dto = CreateGoalDtoFaker.Generate(_template.Id);
+            await _httpClient.PostAsJsonAsync("api/goals", dto);
 
-        [Theory]
-        [MemberData(nameof(GetValidDatesOfMonth))]
-        public async Task GetGoalDates_ShouldReturnOne(string date)
-        {
-            var goal = GoalTestObjects.GetBaseGoal();
-            goal.UserId = _baseUserId;
-            await _dbContext.GoalItems.AddAsync(goal);
-            await _dbContext.SaveChangesAsync();
-            var goalDate = GoalTestObjects.GetGoalDate();
-            goalDate.GoalId = goal.Id;
-            goalDate.StateId = goal.Template!.States.First().Id;
-            await _dbContext.GoalDates.AddAsync(goalDate);
-            await _dbContext.SaveChangesAsync();
+            // act
+            var response = await _httpClient.GetAsync("api/goals");
 
-            var response = await _httpClient.GetAsync($"api/goals/{goal.Id}/dates?DateOfMonth={date}");
-
+            // assert
             response.EnsureSuccessStatusCode();
-            var data = await response.Content.ReadFromJsonAsync<List<GetGoalDateDto>>();
+            
+            var data = await response.Content.ReadFromJsonAsync<List<GetUserGoalDto>>();
             data.Should().NotBeNull();
             data.Should().HaveCount(1);
+
+            data!.Single().Name.Should().Be(dto.Name);
+            data!.Single().DaysNumber.Should().Be(dto.DaysNumber);
+            data!.Single().Template.Id.Should().Be(_template.Id);
+            data!.Single().DateStart.Should().Be(dto.DateStart);
         }
 
-        public static IEnumerable<object[]> DatesOfEmptyMonths()
+        [Fact]
+        public async Task GetGoals_ShouldReturnEmptyList()
         {
-            yield return new object[] { "2024-02-01" };
-            yield return new object[] { "2023-12-01" };
-            yield return new object[] { "2020-05-11" };
-            yield return new object[] { "2040-08-30" };
-        }
+            // act
+            var response = await _httpClient.GetAsync("api/goals");
 
-        [Theory]
-        [MemberData(nameof(DatesOfEmptyMonths))]
-        public async Task GetGoalDates_ShouldReturnZero(string date)
-        {
-            var goal = GoalTestObjects.GetBaseGoal();
-            goal.UserId = _baseUserId;
-            await _dbContext.GoalItems.AddAsync(goal);
-            await _dbContext.SaveChangesAsync();
-            var goalDate = GoalTestObjects.GetGoalDate();
-            goalDate.GoalId = goal.Id;
-            goalDate.StateId = goal.Template!.States.First().Id;
-            await _dbContext.GoalDates.AddAsync(goalDate);
-            await _dbContext.SaveChangesAsync();
-
-            var response = await _httpClient.GetAsync($"api/goals/{goal.Id}/dates?DateOfMonth={date}");
-
+            // assert
             response.EnsureSuccessStatusCode();
-            var data = await response.Content.ReadFromJsonAsync<List<GetGoalDateDto>>();
-            data.Should().NotBeNull();
+
+            var data = await response.Content.ReadFromJsonAsync<List<GetUserGoalDto>>();
             data.Should().HaveCount(0);
         }
 
         [Fact]
         public async Task CreateGoalDate_ShouldReturnNewGoalDate()
         {
-            var goal = GoalTestObjects.GetBaseGoal();
-            goal.UserId = _baseUserId;
-            await _dbContext.GoalItems.AddAsync(goal);
-            await _dbContext.SaveChangesAsync();
-            DateOnly date = new DateOnly(2024, 1, 4);
-            CreateGoalDateDto dto = new CreateGoalDateDto(date, "Comment", goal.Template.States.First().Id);
+            // arrange
+            var goal = await CreateGoalAsync();
 
+            CreateGoalDateDto dto = CreateGoalDateDtoFaker
+                .Generate(goal.Template.States[0].Id, goal.DateStart, goal.DaysNumber);
+
+            // act
             var response = await _httpClient.PostAsJsonAsync($"api/goals/{goal.Id}/dates", dto);
-
+            
+            // assert
             response.EnsureSuccessStatusCode();
+            
             var data = await response.Content.ReadFromJsonAsync<GetGoalDateDto>();
             data.Should().NotBeNull();
-            data!.Date.Should().Be(date);
-            data.Comment.Should().Be("Comment");
-            data.StateId.Should().NotBeEmpty();
+            
+            data!.Date.Should().Be(dto.Date);
+            data.Comment.Should().Be(dto.Comment);
+            data.StateId.Should().Be(dto.StateId);
+        }
+
+        private async Task<GetUserGoalDto> CreateGoalAsync()
+        {
+            CreateGoalDto goalDto = CreateGoalDtoFaker.Generate(_template.Id);
+            var response = await _httpClient.PostAsJsonAsync("api/goals", goalDto);
+            return (await response.Content.ReadFromJsonAsync<GetUserGoalDto>())!;
         }
 
         [Fact]
         public async Task CreateGoalDate_ShouldReturnBad_WhenGoalDoesNotExist()
         {
-            var goal = GoalTestObjects.GetBaseGoal();
-            goal.UserId = _baseUserId;
-            await _dbContext.GoalItems.AddAsync(goal);
-            await _dbContext.SaveChangesAsync();
-            DateOnly date = new DateOnly(2024, 1, 4);
-            CreateGoalDateDto dto = new CreateGoalDateDto(date, "Comment", goal.Template!.States.First().Id);
+            // arrange
+            CreateGoalDateDto dto = CreateGoalDateDtoFaker
+                .Generate(Guid.NewGuid(), DateOnly.FromDateTime(DateTime.Now), 12);
 
+            // act
             var response = await _httpClient.PostAsJsonAsync($"api/goals/{Guid.NewGuid()}/dates", dto);
 
+            // assert
             response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+
+            var body = await response.Content.ReadAsStringAsync();
+            body.Should().Contain(nameof(GoalItem));
         }
 
         [Fact]
         public async Task CreateGoalDate_ShouldReturnBad_WhenStateIsWrong()
         {
-            var goal = GoalTestObjects.GetBaseGoal();
-            goal.UserId = _baseUserId;
-            await _dbContext.GoalItems.AddAsync(goal);
-            await _dbContext.SaveChangesAsync();
-            DateOnly date = new DateOnly(2024, 1, 4);
-            CreateGoalDateDto dto = new CreateGoalDateDto(date, "Comment", Guid.NewGuid());
+            // arrange
+            var goal = await CreateGoalAsync();
 
+            CreateGoalDateDto dto = CreateGoalDateDtoFaker
+                .Generate(Guid.NewGuid(), goal.DateStart, goal.DaysNumber);
+
+            // act
             var response = await _httpClient.PostAsJsonAsync($"api/goals/{goal.Id}/dates", dto);
 
+            // assert
             response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+
+            var body = await response.Content.ReadAsStringAsync();
+            body.Should().Contain("status");
         }
 
-        public static IEnumerable<object[]> DatesOutOfRange()
+        [Fact]
+        public async Task CreateGoalDate_ShouldReturnBad_WhenDateBeforeStart()
         {
-            yield return new object[] { new DateOnly(2020, 1, 1) };
-            yield return new object[] { new DateOnly(2024, 2, 1) };
-            yield return new object[] { new DateOnly(2024, 1, 13) };
-        }
+            // arrange
+            var goal = await CreateGoalAsync();
 
-        [Theory]
-        [MemberData(nameof(DatesOutOfRange))]
-        public async Task CreateGoalDate_ShouldReturnBad_WhenDateIsWrong(DateOnly date)
-        {
-            var goal = GoalTestObjects.GetBaseGoal();
-            goal.UserId = _baseUserId;
-            await _dbContext.GoalItems.AddAsync(goal);
-            await _dbContext.SaveChangesAsync();
-            CreateGoalDateDto dto = new CreateGoalDateDto(date, "Comment", Guid.NewGuid());
+            CreateGoalDateDto dto = CreateGoalDateDtoFaker
+                .Generate(goal.Template.States[0].Id, goal.DateStart, goal.DaysNumber);
+            dto = dto with { Date = goal.DateStart.AddDays(-1) };
 
+            // act
             var response = await _httpClient.PostAsJsonAsync($"api/goals/{goal.Id}/dates", dto);
 
+            // assert
             response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+
+            var body = await response.Content.ReadAsStringAsync();
+            body.Should().Contain("date");
+        }
+
+        [Fact]
+        public async Task CreateGoalDate_ShouldReturnBad_WhenDateAfterEnd()
+        {
+            // arrange
+            var goal = await CreateGoalAsync();
+
+            CreateGoalDateDto dto = CreateGoalDateDtoFaker
+                .Generate(goal.Template.States[0].Id, goal.DateStart, goal.DaysNumber);
+            dto = dto with { Date = goal.DateStart.AddDays(goal.DaysNumber) };
+
+            // act
+            var response = await _httpClient.PostAsJsonAsync($"api/goals/{goal.Id}/dates", dto);
+
+            // assert
+            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+
+            var body = await response.Content.ReadAsStringAsync();
+            body.Should().Contain("date");
         }
 
         [Fact]
         public async Task CreateGoalDate_ShouldReturnBad_WhenDateInFuture()
         {
-            var goal = GoalTestObjects.GetBaseGoal();
-            goal.DateStart = DateOnly.FromDateTime(DateTime.Now);
-            goal.UserId = _baseUserId;
-            await _dbContext.GoalItems.AddAsync(goal);
-            await _dbContext.SaveChangesAsync();
-            DateOnly date = DateOnly.FromDateTime(DateTime.Now.AddDays(2));
-            CreateGoalDateDto dto = new CreateGoalDateDto(date, "Comment", Guid.NewGuid());
+            // arrange
+            var goal = await CreateGoalAsync();
 
+            CreateGoalDateDto dto = CreateGoalDateDtoFaker
+                .Generate(goal.Template.States[0].Id, goal.DateStart, goal.DaysNumber);
+            dto = dto with { Date = DateOnly.FromDateTime(DateTime.Now.AddDays(2)) };
+
+            // act
             var response = await _httpClient.PostAsJsonAsync($"api/goals/{goal.Id}/dates", dto);
 
+            // assert
             response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+
+            var body = await response.Content.ReadAsStringAsync();
+            body.Should().Contain("date");
+        }
+
+        [Fact]
+        public async Task GetGoalDates_ShouldReturnOne()
+        {
+            // arrange
+            var goal = await CreateGoalAsync();
+
+            CreateGoalDateDto dto = CreateGoalDateDtoFaker
+                .Generate(goal.Template.States[0].Id, goal.DateStart, goal.DaysNumber);
+            await _httpClient.PostAsJsonAsync($"api/goals/{goal.Id}/dates", dto);
+            var date = dto.Date.ToDateTime(TimeOnly.MinValue).ToString("yyyy/MM/dd");
+
+            // act
+            var response = await _httpClient.GetAsync($"api/goals/{goal.Id}/dates?DateOfMonth={date}");
+
+            // assert
+            response.EnsureSuccessStatusCode();
+            var data = await response.Content.ReadFromJsonAsync<List<GetGoalDateDto>>();
+            data.Should().NotBeNull();
+            data.Should().HaveCount(1);
+        }
+
+        [Fact]
+        public async Task GetGoalDates_ShouldReturnEmpty()
+        {
+            // arrange
+            var goal = await CreateGoalAsync();
+
+            CreateGoalDateDto dto = CreateGoalDateDtoFaker
+                .Generate(goal.Template.States[0].Id, goal.DateStart, goal.DaysNumber);
+            await _httpClient.PostAsJsonAsync($"api/goals/{goal.Id}/dates", dto);
+            var date = dto.Date.AddMonths(-1).ToDateTime(TimeOnly.MinValue).ToShortDateString();
+
+            // act
+            var response = await _httpClient.GetAsync($"api/goals/{goal.Id}/dates?DateOfMonth={date}");
+
+            // assert
+            response.EnsureSuccessStatusCode();
+            var data = await response.Content.ReadFromJsonAsync<List<GetGoalDateDto>>();
+            data.Should().NotBeNull();
+            data.Should().BeEmpty();
         }
     }
 }

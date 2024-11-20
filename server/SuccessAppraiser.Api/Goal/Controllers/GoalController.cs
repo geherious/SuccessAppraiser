@@ -45,8 +45,15 @@ namespace SuccessAppraiser.Api.Goal.Controllers
         {
             Guid userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
 
-            var command = _mapper.Map<CreateGoalCommand>(goalDto);
-            command.UserId = userId;
+            var command = new CreateGoalCommand()
+            {
+                Name = goalDto.Name,
+                Description = goalDto.Description,
+                DateStart = goalDto.DateStart,
+                DaysNumber = goalDto.DaysNumber,
+                TemplateId = goalDto.TemplateId,
+                UserId = userId
+            };
 
             GoalItem newGoal = await _goalService.CreateGoalAsync(command, ct);
 

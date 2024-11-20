@@ -63,7 +63,7 @@ namespace SuccessAppraiser.BLL.Goal.Services
                 datesFailures.Add(new ValidationFailure("Date", message));
             }
 
-            if (date < goal.DateStart || date > goal.DateStart.AddDays(goal.DaysNumber))
+            if (date < goal.DateStart || date >= goal.DateStart.AddDays(goal.DaysNumber))
             {
                 var message = $"Provided date should be between the start date and the end date of the goal {goal.DateStart}";
                 datesFailures.Add(new ValidationFailure("Date", message));

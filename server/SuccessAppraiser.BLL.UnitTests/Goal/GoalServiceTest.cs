@@ -35,8 +35,14 @@ namespace SuccessAppraiser.BLL.UnitTests.Goal
             // arrange
             GoalTemplate template = TemplateFaker.Generate(1)[0];
 
-            CreateGoalCommand command = new CreateGoalCommand(
-                "Name", "Description", 12, new DateOnly(2024, 10, 12), template.Id);
+            CreateGoalCommand command = new CreateGoalCommand
+            {
+                Name = "Name",
+                Description = "Description",
+                DaysNumber = 12,
+                DateStart = new DateOnly(2024, 10, 12),
+                TemplateId = template.Id
+            };
 
             Guid userGuid = Guid.NewGuid();
             command.UserId = userGuid;
@@ -69,8 +75,14 @@ namespace SuccessAppraiser.BLL.UnitTests.Goal
             // arrange
             GoalTemplate template = TemplateFaker.Generate(1)[0];
 
-            CreateGoalCommand command = new CreateGoalCommand(
-                "Name", "Description", 12, new DateOnly(2024, 10, 12), template.Id);
+            CreateGoalCommand command = new CreateGoalCommand
+            {
+                Name = "Name",
+                Description = "Description",
+                DaysNumber = 12,
+                DateStart = new DateOnly(2024, 10, 12),
+                TemplateId = template.Id
+            };
 
             command.UserId = Guid.NewGuid();
 

@@ -10,6 +10,7 @@ using SuccessAppraiser.Data.Entities;
 using SuccessAppraiser.BLL;
 using SuccessAppraiser.Data.Repositories.DependencyInjection;
 using Microsoft.AspNetCore.HttpOverrides;
+using System.Globalization;
 
 
 
@@ -20,6 +21,9 @@ namespace SuccessAppraiser
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+
+            CultureInfo.DefaultThreadCurrentCulture = CultureInfo.InvariantCulture;
+            CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.InvariantCulture;
 
             var config = builder.Configuration;
 
@@ -150,4 +154,3 @@ namespace SuccessAppraiser
         }
     }
 }
-
