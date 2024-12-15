@@ -5,7 +5,7 @@ import authStore from '../../../Store/authStore';
 import { Navigate } from 'react-router-dom';
 import { registerEndpoint } from '../../../api/authApi';
 
-const USERNAME_REGEX = /^[a-zA-z][a-zA-z0-9-_]{2,}$/;
+const USERNAME_REGEX = /^[a-zA-Z][a-zA-Z0-9-_]{2,}$/;
 const PASSWORD_REGEX = /^(?=.*?\d)(?=.*?[a-zA-Z])[a-zA-Z\d-]{6,}$/;
 const EMAIL_REGEX = /^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
 
